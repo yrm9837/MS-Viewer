@@ -1,0 +1,150 @@
+
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>A simple specctrum</title>  
+</head> 
+
+<style>
+	.axis path,
+	.axis line{
+		fill: none;
+		stroke: black;
+		shape-rendering: crispEdges;
+	}
+
+	.axis text {
+		font-family: sans-serif;
+		font-size: 11px;
+	}
+
+	.MyPeak {
+		stroke: steelblue;
+		stroke-width: 2;
+	}
+
+	.MyNote {
+		stroke: red;
+		stroke-dasharray: 5,5;
+	}
+
+	.MyText {
+		fill: red;
+		text-anchor: middle;
+	}
+</style>
+
+<body>  
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+	<script>
+
+	//画布大小
+	var width = 800;
+	var height = 400;
+
+	//在 body 里添加一个 SVG 画布	
+	var svg = d3.select("body")
+		.append("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+	//画布周边的空白
+	var padding = {left:30, right:30, top:20, bottom:20};
+
+	//定义一个数组
+	var peakmass = [99,213,312,468,555];
+	var peakintensity = [123,231,79,109,139];
+	var ynotesmass = [213,468];
+	var ynotesintensity = [231,109];
+		
+	// //x轴的比例尺
+	// var xScale = d3.scale.ordinal()
+	// 	.domain(d3.range(0,d3.max(peakmass),Math.round(d3.max(peakmass)/10)))
+	// 	.rangeRoundBands([0, width - padding.left - padding.right]);
+
+	//x轴的比例尺
+	var xScale = d3.scale.linear()
+		.domain([0,d3.max(peakmass) * 1.1 - d3.min(peakmass) * 0.1])
+		.range([0, width - padding.left - padding.right]);
+	//y轴的比例尺
+	var yScale = d3.scale.linear()
+		.domain([0,d3.max(peakintensity)*4/3])
+		.range([height - padding.top - padding.bottom, 0]);
+
+	//定义x轴
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom");
+		
+	//定义y轴
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.orient("left");
+
+
+	//添加peaks元素
+	var peaks = svg.selectAll(".MyPeak")
+		.data(peakmass)
+		.enter()
+		.append("line")
+		.attr("class","MyPeak")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x1",function(d,i){
+			return xScale(d);
+		} )
+		.attr("y1",function(d,i){
+			return yScale(peakintensity[i]);
+		})
+		.attr("x2",function(d,i){
+			return xScale(d);
+		} )
+		.attr("y2",height - padding.bottom - padding.top)
+
+	//添加注释虚线
+	var notshiftx = 30;
+	var notshofty = 30;
+	var notes = svg.selectAll(".MyNote")
+		.data(ynotesmass)
+		.enter()
+		.append("path")
+		.attr("class","MyNote")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("d",function(d,i){
+			return "M" + xScale(d) + " " + yScale(ynotesintensity[i]) +" " + "L" + (xScale(d) + notshiftx) + " " + (yScale(ynotesintensity[i]) - notshofty) ;
+		});
+
+
+	//添加注释文字
+	var textshiftx = 15;
+	var textshifty = -5;
+	var texts = svg.selectAll(".MyText")
+		.data(ynotesmass)
+		.enter()
+		.append("text")
+		.attr("class","MyText")
+		.attr("transform","translate(" + (padding.left + textshiftx) + "," + (padding.top + textshifty) + ")")
+		.attr("x", function(d,i){
+			return xScale(d) + notshiftx;
+		} )
+		.attr("y",function(d,i){
+			return yScale(ynotesintensity[i]) - notshofty;
+		})
+		.text(function(d,i){
+			return "y" + (i + 1);
+		});
+
+	//添加x轴
+	svg.append("g")
+		.attr("class","axis")
+		.attr("transform","translate(" + padding.left + "," + (height - padding.bottom) + ")")
+		.call(xAxis); 
+		
+	//添加y轴
+	svg.append("g")
+		.attr("class","axis")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.call(yAxis);
+
+</script>  
+</body>  
+</html>  
