@@ -1,0 +1,62 @@
+
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>做一个简单的图表</title>  
+</head> 
+<body>  
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+<script>
+	var data = [
+		{'cx':210, 'cy':210, 'r':50, 'fill':'#ff0000'},
+		{'cx':75, 'cy':75, 'r':40, 'fill':'#00cc00'},
+		{'cx':200, 'cy':30, 'r':30, 'fill':'#0000ff'},
+		{'cx':80, 'cy':190, 'r':80, 'fill':'#0099cc'},
+		{'cx':100, 'cy':100, 'r':30, 'fill':'#ff9900'}
+	];
+
+	var drag = d3.behavior.drag()  
+				.on('dragstart', function(d) { 
+				// d3.select(this)
+				// 	.attr({'fill':'black'});
+				console.log(d3.event);
+				})
+				.on('drag', function(d) { 
+				d3.selectAll('circle').attr({
+				  'cx': function(d){ return d.cx += d3.event.dx},
+				  // 'cy': d.cy += d3.event.dy,
+				}); 
+				console.log(d3.event);
+				console.log(d);
+				})
+				.on('dragend', function(d) { 
+				// d3.select(this).attr({'fill':d.fill});
+				console.log(d3.event);
+				});
+
+	var svg = d3.select('body')
+	        .append('svg')
+	        .attr({
+	          'width':'400',
+	          'height':'300'
+	        })
+	        .style({
+	          'border':'1px solid #000'
+	        })
+	        .call(drag);
+	svg.selectAll('circle')
+	        .data(data)
+	        .enter()
+	        .append('circle')
+	        .attr({
+	          'cx': function(d){return d.cx;},
+	          'cy': function(d){return d.cy;},
+	          'r': function(d){return d.r;},
+	          'fill': function(d){return d.fill;}
+	        });
+	        // .call(drag);
+
+</script>  
+	
+</body>  
+</html>  
