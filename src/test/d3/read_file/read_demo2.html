@@ -1,0 +1,53 @@
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>A simple specctrum</title>  
+</head> 
+
+
+<body>  
+<input type="file" name="upload" id="upload" accept="text/plain"/>
+<textarea name="content" id="content"></textarea>
+
+<script type="text/javascript">
+    window.onload = function() {
+        /**
+         * 上传函数
+         * @param fileInput DOM对象
+         * @param callback 回调函数
+         */
+        var getFileContent = function (fileInput, callback) {
+            if (fileInput.files && fileInput.files.length > 0 && fileInput.files[0].size > 0) {
+                //下面这一句相当于JQuery的：var file =$("#upload").prop('files')[0];
+                var file = fileInput.files[0];
+                if (window.FileReader) {
+                    var reader = new FileReader();
+                    console.log(reader);
+                    reader.onloadend = function (evt) {
+                    	console.log(evt);
+                        if (evt.target.readyState == FileReader.DONE) {
+                    		console.log(evt.target.result);
+                            callback(evt.target.result);
+                        }
+                    };
+                    // 包含中文内容用gbk编码
+                    reader.readAsText(file);
+                }
+            }
+        };
+
+        /**
+         * upload内容变化时载入内容
+         */
+        document.getElementById('upload').onchange = function () {
+            var content = document.getElementById('content');
+
+            getFileContent(this, function (str) {
+                content.value = str;
+            });
+        };
+    };
+</script>
+
+</body>  
+</html>  

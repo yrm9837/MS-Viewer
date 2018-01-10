@@ -1,0 +1,17 @@
+<body>
+<img id="image"src=""/>
+<input type="file" onchange="selectImage(this);"/>
+<script>
+if(window.FileReader){
+　　function selectImage(file){
+　　　　var reader = new FileReader();
+　　　　reader.readAsDataURL(file.files[0]);
+　　　　reader.onload = function(evt){
+　　　　　　document.getElementById('image').src = evt.target.result;
+　　　　}
+　　}
+}else{
+　　console.log('浏览器不支持FileReader');
+}
+</script>
+</body>

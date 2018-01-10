@@ -1,0 +1,23 @@
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>A simple specctrum</title>  
+</head> 
+
+
+<body>  
+<p>This read file method only works in IE.</p>
+
+<script type="text/javascript">
+//读取内容  
+function ReadDemo(){    
+        var fso = new ActiveXObject("Scripting.FileSystemObject");  
+        var f = fso.OpenTextFile("/Users/runmin/Documents/BGM/JSproject/spectra_visualization/src/test/d3/read_file/scan_6.msalign", 1);  
+        var value = f.ReadLine();  
+        f.Close();  
+        return value;  
+}   
+console.log(ReadDemo())
+</script>  
+</body>  
+</html>  
