@@ -1,0 +1,473 @@
+
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>A simple specctrum</title>  
+</head> 
+
+<style>
+	.axis path,
+	.axis line{
+		fill: none;
+		stroke: black;
+		shape-rendering: crispEdges;
+	}
+
+	.axis text {
+		font-family: sans-serif;
+		font-size: 11px;
+	}
+
+	.MyText {
+		fill: red;
+		text-anchor: middle;
+		font-size: 10px;
+	}
+
+	.container{
+	    height:80%;
+	    width:80%;
+	}
+
+</style>
+
+<body>  
+
+	<input type="file" name="upload_an" id="upload_an"/>
+	<input type="file" name="upload_sp" id="upload_sp"/>
+	<textarea name="content" id="content"></textarea>
+
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+	<script>
+	 window.onload = function() {
+	    /**
+	     * 上传函数
+	     * @param fileInput DOM对象
+	     * @param callback 回调函数
+	     */
+	    var getFileContent = function (fileInput, callback) {
+	        if (fileInput.files && fileInput.files.length > 0 && fileInput.files[0].size > 0) {
+	            //下面这一句相当于JQuery的：var file =$("#upload").prop('files')[0];
+	            var file = fileInput.files[0];
+	            if (window.FileReader) {
+	                var reader = new FileReader();
+	                console.log(reader);
+	                reader.onloadend = function (evt) {
+	                	console.log(evt);
+	                    if (evt.target.readyState == FileReader.DONE) {
+	                		console.log(evt.target.result);
+	                        callback(evt.target.result);
+	                    }
+	                };
+	                // 包含中文内容用gbk编码
+	                reader.readAsText(file);
+	            }
+	        }
+	    };
+
+	    /**
+	     * upload内容变化时载入内容
+	     */
+	    document.getElementById('upload_sp').onchange = function () {
+	        var content = document.getElementById('content');
+
+	        getFileContent(this, function (str) {
+	            content.value = str;
+	            readPeaks(str);
+	        });
+	    };
+	    document.getElementById('upload_an').onchange = function () {
+	        var content = document.getElementById('content');
+
+	        getFileContent(this, function (str) {
+	            content.value = str;
+	            readTexts(str);
+	        });
+	    };
+	};
+
+	function readPeaks(input) {
+		peakData = []
+		var inText = input.split('\n');
+		var length = inText.length;
+		for(var i = 0; i < length; i++) {
+			if(inText[i] == "") {
+
+			}else if(inText[i].substr(0,5) == "BEGIN") {
+
+			}else if(inText[i].substr(0,5) == "TITLE") {
+
+			}else if(inText[i].substr(0,11) == "RTINSECONDS") {
+
+			}else if(inText[i].substr(0,3) == "END") {
+
+			}else if(inText[i].substr(0,7) == "PEPMASS") {
+
+
+			}else {
+				var singlePeak = inText[i].split(' ');
+				var singlePeakData = [];
+				singlePeakData[0] = Number(singlePeak[0]);
+				singlePeakData[1] = Number(singlePeak[1]);
+				peakData.push(singlePeakData);
+			}
+		}
+		console.log(peakData);
+		convertData();
+		addPeaks();
+		addTexts();
+		addAxis();
+	}
+	function readTexts(input) {
+		annotationData = []
+		var inText = input.split('\n');
+		var length = inText.length;
+		for(var i = 0; i < length; i++) {
+			if(inText[i] == "") {
+
+			}else if(inText[i].substr(0,5) == "BEGIN") {
+
+			}else if(inText[i].substr(0,3) == "END") {
+
+			}else {
+				var singleAn = inText[i].split('\t');
+				var singleAnData = [];
+				console.log(singleAn);
+				singleAnData[0] = Number(singleAn[3]);
+				singleAnData[1] = Number(singleAn[4])/4;
+				singleAnData[2] = singleAn[7];
+				annotationData.push(singleAnData);
+			}
+		}
+		console.log(annotationData);
+	}
+
+	//画布大小
+	var width = 1000;
+	var height = 400;
+
+	var x = 0;
+	var y = 0;
+	var xs = 1;
+	var ys = 1;
+
+	var xZoom = d3.behavior.zoom()
+		.translate([0, 0])
+		.scaleExtent([1, 100000000])
+		.scale(1)
+		.on("zoom", xZoomed);
+	var yZoom = d3.behavior.zoom()
+		.translate([0, 0])
+		.scaleExtent([0.0001, 100000000])
+		.scale(1)
+		.on("zoom", yZoomed);
+
+
+	var container = d3.select("body")
+		.append("g")
+		.attr("class", "container");
+
+
+	//画布周边的空白
+	var padding = {left:100, right:100, top:20, bottom:50};
+
+	//在 body 里添加一个 SVG 画布	
+	var svg = d3.select(".container").append("svg")
+        .attr("preserveAspectRatio", "xMidYMin meet")
+        .attr("viewBox", "0 0 "+width+" "+height)
+		.attr("width", "100%")
+		.attr("height", "100%")
+        .on('dblclick.zoom', init);
+    var group_top = svg.append("g")
+        .call(yZoom);
+    var tect_top = group_top.append("rect")
+    	.attr("x","0")
+    	.attr("y","0")
+    	.attr("width",width)
+    	.attr("height",height - padding.bottom)
+    	.attr("style","fill:rgb(255,255,255);stroke-width:0;stroke:rgb(0,0,0);fill-opacity:0");
+    var group_bottom = svg.append("g")
+        .call(xZoom)
+        .on('mousedown', function(){
+			svg.attr("cursor","move");
+        })
+        .on('mouseup', function(){
+			svg.attr("cursor","default");
+        });
+    var tect_bottom = group_bottom.append("rect")
+    	.attr("x","0")
+    	.attr("y",height - padding.bottom)
+    	.attr("width",width)
+    	.attr("height",padding.bottom)
+    	.attr("style","fill:rgb(255,255,255);stroke-width:0;stroke:rgb(0,0,0);fill-opacity:0");
+
+	var peakData = [];
+	var annotationData = [];
+	
+	var xDomain;
+	var xRange;
+	var xScale;
+	var yScale;
+	var xAxis;
+	var yAxis;
+
+
+	var peakmass = [];
+	var peakintensity = [];
+	var notesmass = [];
+	var notesintensity = [];
+	var notestype = [];
+	function convertData() {
+		var i = peakData.length;
+		while(i--) {
+			peakmass[i] = peakData[i][0];
+			peakintensity[i] = peakData[i][1];
+		}
+		i = annotationData.length;
+		while(i--) {
+			notesmass[i] = annotationData[i][0];
+			notesintensity[i] = annotationData[i][1];
+			notestype[i] = annotationData[i][2];
+		}
+		console.log(peakmass);
+		console.log(peakintensity);
+		console.log(notesmass);
+		console.log(notesintensity);
+		console.log(notestype);
+
+		xDomain = d3.max(peakmass) * 1.1 - d3.min(peakmass) * 0.1
+		xRange = width - padding.left - padding.right
+		//x轴的比例尺
+		xScale = d3.scale.linear()
+			.domain([0,xDomain])
+			.range([0, xRange]);
+		//y轴的比例尺
+		yScale = d3.scale.linear()
+			.domain([0,d3.max(peakintensity)*4/3])
+			.range([height - padding.top - padding.bottom, 0]);
+
+		//定义x轴
+		xAxis = d3.svg.axis()
+			.scale(xScale)
+			.orient("bottom")
+	        .ticks(10);
+			
+		//定义y轴
+		yAxis = d3.svg.axis()
+			.scale(yScale)
+			.orient("left");
+
+	}
+	convertData();
+
+
+	var peaks = group_top.selectAll(".MyPeak")
+	//添加peaks元素
+	function addPeaks() {
+		peaks.data(peakmass)
+		.enter()
+		.append("line")
+		.attr("class","MyPeak")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x1",function(d,i){
+			return xScale(d);
+		} )
+		.attr("y1",function(d,i){
+			return yScale(peakintensity[i]);
+		})
+		.attr("x2",function(d,i){
+			return xScale(d);
+		})
+		.attr("y2",height - padding.bottom - padding.top)
+		.attr("stroke",function(d,i){
+			if(notesmass.indexOf(d) != -1){
+				return "steelblue";
+			}else{
+				return "black";
+			}
+		})
+		.attr("stroke-width","2")
+		.on("mouseover",function(d,i){
+			over(d3.select(this));
+		})
+		.on("mouseout",function(d,i){
+			out(this,d);
+		});
+	}
+	// addPeaks();
+      	// .call(drag);
+	function over(select){
+			select.attr("stroke","red")
+				.attr("stroke-width","3");
+	};
+	function out(t,d){
+		d3.select(t)
+				.transition()
+		        .duration(500)
+				.attr("stroke",function(d){
+					if(notesmass.indexOf(d) != -1){
+						return "steelblue";
+					}else{
+						return "black";
+					}
+				})
+				.attr("stroke-width","2");
+	};
+
+	//添加注释文字
+	var textshiftx = 0;
+	var textshifty = -5;
+	var texts = group_top.selectAll(".MyText")
+	function addTexts() {
+		texts.data(notesmass)
+		.enter()
+		.append("text")
+		.attr("class","MyText")
+		.attr("transform","translate(" + (padding.left + textshiftx) + "," + (padding.top + textshifty) + ")")
+		.attr("x", function(d,i){
+			return xScale(d);
+		} )
+		.attr("y",function(d,i){
+			return yScale(notesintensity[i]);
+		})
+		.text(function(d,i){
+			return notestype[i];
+		});
+      	// .call(drag);
+	}
+	// addTexts();
+
+	function addAxis() {
+		//添加x轴
+		group_bottom.append("g")
+			.attr("id","xAxis")
+			.attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + (height - padding.bottom) + ")")
+			.call(xAxis); 
+			
+		//添加y轴
+		group_top.append("g")
+			.attr("id","yAxis")
+			.attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+			.call(yAxis);
+	}
+	// addAxis();
+
+
+	function xZoomed() {
+		xs=d3.event.scale;
+		x=d3.event.translate[0] + padding.left * (xs - 1);
+		console.log(d3.event);
+		console.log(d3.event.translate);
+		console.log(d3.event.scale);
+		console.log("translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+		// container.attr("transform", "translate(" + d3.event.translate[0] + ",0) scale(" + d3.event.scale + ")");
+
+		reset();
+	};
+	function yZoomed() {
+		ys=d3.event.scale;
+		// y=d3.event.translate[1] + padding.top * (ys - 1);
+		console.log(d3.event);
+		console.log(d3.event.translate);
+		console.log(d3.event.scale);
+		console.log("translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+		// container.attr("transform", "translate(" + d3.event.translate[0] + ",0) scale(" + d3.event.scale + ")");
+
+		reset();
+	};
+
+	function init() {
+		d3.transition().duration(500).tween("zoom", function() {
+		    var xsi = d3.interpolate(xs, 1);
+		    var ysi = d3.interpolate(ys, 1);
+		    var xi = d3.interpolate(x - padding.left * (xs - 1), 0);
+		    var yi = d3.interpolate(y, 0);
+		    return function(t){
+		      svg.call(xZoom.translate([xi(t),yi(t)]).scale(xsi(t)).event);
+		      svg.call(yZoom.translate([xi(t),yi(t)]).scale(ysi(t)).event);
+		 	}
+  		});
+
+	}
+
+	function reset() {
+	  	group_top.selectAll(".MyText")
+	  	.attr("x", function(d,i){
+	  		var tmpx = xScale(d) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+	  	})
+	  	.attr("y", function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale(notesintensity[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+	  	});
+	  	group_top.selectAll(".MyPeak")	
+		.attr("x1",function(d,i){
+	  		var tmpx = xScale(d) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+		} )	
+		.attr("y1",function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale(peakintensity[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+		} )
+		.attr("x2",function(d,i){
+	  		var tmpx = xScale(d) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+		});
+		// var dragd = xDomain*x/(xRange*s);
+		var dragd = xDomain*x/(xRange*xs);
+		//x轴的比例尺
+		var xScale_new = d3.scale.linear()
+			.domain([0-dragd,xDomain/xs-dragd])
+			.range([0, xRange]);
+		//定义x轴
+		var xAxis_new = d3.svg.axis()
+			.scale(xScale_new)
+			.orient("bottom")
+        	.ticks(10);
+		group_bottom.select("#xAxis")
+			.call(xAxis_new); 
+		//y轴的比例尺
+		var yScale_new = d3.scale.linear()
+			.domain([0,d3.max(peakintensity)*4/3/ys])
+			.range([height - padding.top - padding.bottom, 0]);
+		
+		//定义y轴
+		var yAxis_new = d3.svg.axis()
+			.scale(yScale_new)
+			.orient("left");
+		group_top.select("#yAxis")
+			.call(yAxis_new); 
+
+	};
+
+</script>  
+</body>  
+</html>  

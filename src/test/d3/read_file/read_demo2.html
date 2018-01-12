@@ -6,10 +6,11 @@
 
 
 <body>  
-<input type="file" name="upload" id="upload" accept="text/plain"/>
+<input type="file" name="upload" id="upload"/>
 <textarea name="content" id="content"></textarea>
 
 <script type="text/javascript">
+    var st;
     window.onload = function() {
         /**
          * 上传函数
@@ -43,7 +44,8 @@
             var content = document.getElementById('content');
 
             getFileContent(this, function (str) {
-                content.value = str;
+                st = str;
+                content.value = "OK";
             });
         };
     };
