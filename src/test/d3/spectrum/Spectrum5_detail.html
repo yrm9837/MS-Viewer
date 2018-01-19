@@ -50,6 +50,11 @@
 				text-anchor: middle;
 				font-size: 10px;
 			}
+			.MyTextMZ {
+				fill: red;
+				text-anchor: middle;
+				font-size: 10px;
+			}
 					
 			.container{
 			    height:80%;
@@ -628,30 +633,96 @@
 		})
 		.attr("stroke-width","2")
 		.on("mouseover",function(d,i){
-			over(d3.select(this));
+			over(this,d,i);
 		})
 		.on("mouseout",function(d,i){
 			out(this,d);
 		});
 	}
+	var textMZ;
+	var textIN;
 	// addPeaks();
       	// .call(drag);
-	function over(select){
-			select.attr("stroke","red")
+	function over(t,d,i){
+			console.log("d:"+d);
+			console.log("i:"+i);
+			console.log("x:"+xScale(d));
+			console.log("y:"+(yScale(peakintensity[i])-10));
+			var tmpData = [[xScale(d),yScale(peakintensity[i])]];
+			d3.select(t).attr("stroke","red")
 				.attr("stroke-width","3");
+			textMZ = group_top.selectAll(".MyTextMZ")
+				.data(tmpData)
+				.enter()
+				.append("text")
+				.attr("class","MyTextMZ")
+				.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+				.attr("x", function(d) {
+					var tmpx = (d[0] + dragx) * xs + x;
+			  		if (tmpx > 0 && tmpx < xRange){
+			  			return tmpx;
+			  		}else{
+			  			return -1000;
+			  		}
+				})
+				.attr("y", function(d) {
+					var yHight = height - padding.bottom - padding.top - d[1];
+			  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+			  		if (tmpy > height - padding.bottom){
+			  			return height - padding.bottom - 20;
+			  		}else if (tmpy < 0){
+			  			return 0 - 20;
+			  		}else {
+			  			return tmpy - 20;
+			  		}
+				})
+				.text(function(d){
+					return "M:"+d[0];
+				});
+			textIN = group_top.selectAll(".MyTextIN")
+				.data(tmpData)
+				.enter()
+				.append("text")
+				.attr("class","MyTextMZ")
+				.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+				.attr("x", function(d) {
+					var tmpx = (d[0] + dragx) * xs + x;
+			  		if (tmpx > 0 && tmpx < xRange){
+			  			return tmpx;
+			  		}else{
+			  			return -1000;
+			  		}
+				})
+				.attr("y", function(d) {
+					var yHight = height - padding.bottom - padding.top - d[1];
+			  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+			  		if (tmpy > height - padding.bottom){
+			  			return height - padding.bottom - 10;
+			  		}else if (tmpy < 0){
+			  			return 0 - 10;
+			  		}else {
+			  			return tmpy - 10;
+			  		}
+				})
+				.text(function(d){
+					return "I:"+peakintensity[i]*100+"%";
+				});
 	};
 	function out(t,d){
 		d3.select(t)
-				.transition()
-		        .duration(500)
-				.attr("stroke",function(d){
-					if(notesmass.indexOf(d) != -1){
-						return "steelblue";
-					}else{
-						return "black";
-					}
-				})
-				.attr("stroke-width","2");
+			.transition()
+	        .duration(500)
+			.attr("stroke",function(d){
+				if(notesmass.indexOf(d) != -1){
+					return "steelblue";
+				}else{
+					return "black";
+				}
+			})
+			.attr("stroke-width","2");
+
+		textMZ.remove();
+		textIN.remove();
 	};
 
 	//添加注释文字
@@ -698,10 +769,10 @@
 	function xZoomed() {
 		xs=d3.event.scale;
 		x=d3.event.translate[0] + padding.left * (xs - 1);
-		console.log(d3.event);
-		console.log(d3.event.translate);
-		console.log(d3.event.scale);
-		console.log("translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+		// console.log(d3.event);
+		// console.log(d3.event.translate);
+		// console.log(d3.event.scale);
+		// console.log("translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
 		// container.attr("transform", "translate(" + d3.event.translate[0] + ",0) scale(" + d3.event.scale + ")");
 
 		reset();
@@ -709,10 +780,10 @@
 	function yZoomed() {
 		ys=d3.event.scale;
 		// y=d3.event.translate[1] + padding.top * (ys - 1);
-		console.log(d3.event);
-		console.log(d3.event.translate);
-		console.log(d3.event.scale);
-		console.log("translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+		// console.log(d3.event);
+		// console.log(d3.event.translate);
+		// console.log(d3.event.scale);
+		// console.log("translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
 		// container.attr("transform", "translate(" + d3.event.translate[0] + ",0) scale(" + d3.event.scale + ")");
 
 		reset();
@@ -813,12 +884,12 @@
 	function dragstarted() {
 	  d3.event.sourceEvent.stopPropagation();
 	  d3.select(this).classed("dragging", true);
-		console.log(d3.event);
+		// console.log(d3.event);
 		svg.attr("cursor","move");
 	}
 
 	function dragged() {
-		console.log(d3.event);
+		// console.log(d3.event);
 		dragx += d3.event.dx/xs;
 		dragd_drag = xDomain*dragx/xRange;
 		reset()
@@ -826,32 +897,58 @@
 
 	function dragended() {
 	  d3.select(this).classed("dragging", false);
-		console.log(d3.event);
+		// console.log(d3.event);
 		svg.attr("cursor","default");
 	}
 </script>  
 
 <script type="text/javascript">
 	function downloadPng() {
-		var serializer = new XMLSerializer();
-		var source = serializer.serializeToString(svg.node());
+        // var imgSave = document.getElementById('imgSave');
 
-		source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-		var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
-		// document.write('<img src="' + url + '"/>');
+        var serializer = new XMLSerializer();
+        var source = serializer.serializeToString(svg.node());
 
-		var canvas = document.createElement("canvas");
-		canvas.width = width;
-		canvas.height = height;
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+        var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
 
-		var context = canvas.getContext("2d");
-		var image = new Image;
-		image.src = url;
-		context.drawImage(image, 0, 0);
-		var a = document.createElement("a");
-		a.download = "scan"+nowScan+"ms2.png";
-		a.href = canvas.toDataURL("image/png");
-		a.click();
+        var canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        var context = canvas.getContext("2d");
+        //    context.fillRect(0, 0, 10000, 10000);
+        //    context.fillStyle = '#fff';//设置保存后的PNG 是白色的
+        var image = new Image;
+        image.src = url;
+        
+        context.drawImage(image, 0, 0);
+        var a = document.createElement("a");
+        a.download = "fallback.png";
+        a.href = canvas.toDataURL("image/png");
+        a.click();
+
+		console.log("url:"+url);
+		console.log("href:"+a.href);
+		// var serializer = new XMLSerializer();
+		// var source = serializer.serializeToString(svg.node());
+
+		// source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+		// var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+		// // document.write('<img src="' + url + '"/>');
+
+		// var canvas = document.createElement("canvas");
+		// canvas.width = width;
+		// canvas.height = height;
+
+		// var context = canvas.getContext("2d");
+		// var image = new Image;
+		// image.src = url;
+		// context.drawImage(image, 0, 0);
+		// var a = document.createElement("a");
+		// a.download = "scan"+nowScan+"ms2.png";
+		// a.href = canvas.toDataURL("image/png");
+		// a.click();
 	};
 </script>
 </body>  

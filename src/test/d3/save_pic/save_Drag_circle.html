@@ -1,0 +1,91 @@
+
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>做一个简单的图表</title>  
+</head> 
+<body>  
+    <input type="button" value="Download" id="Download_as_png" onclick="downloadPng()" />
+    <br/>
+    <svg/>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+<script>
+	var data = [
+		{'cx':210, 'cy':210, 'r':50, 'fill':'#ff0000'},
+		{'cx':75, 'cy':75, 'r':40, 'fill':'#00cc00'},
+		{'cx':200, 'cy':30, 'r':30, 'fill':'#0000ff'},
+		{'cx':80, 'cy':190, 'r':80, 'fill':'#0099cc'},
+		{'cx':100, 'cy':100, 'r':30, 'fill':'#ff9900'}
+	];
+
+	var drag = d3.behavior.drag()  
+				.on('dragstart', function(d) { 
+				// d3.select(this)
+				// 	.attr({'fill':'black'});
+				console.log(d3.event);
+				})
+				.on('drag', function(d) { 
+				d3.selectAll('circle').attr({
+				  'cx': function(d){ return d.cx += d3.event.dx},
+				  // 'cy': d.cy += d3.event.dy,
+				}); 
+				console.log(d3.event);
+				console.log(d);
+				})
+				.on('dragend', function(d) { 
+				// d3.select(this).attr({'fill':d.fill});
+				console.log(d3.event);
+				});
+	var width = 400,height = 300;
+	var svg = d3.select('body')
+	        .select('svg')
+	        .attr({
+	          'width':'400',
+	          'height':'300'
+	        })
+	        .style({
+	          'border':'1px solid #000'
+	        })
+	        .call(drag);
+	svg.selectAll('circle')
+	        .data(data)
+	        .enter()
+	        .append('circle')
+	        .attr({
+	          'cx': function(d){return d.cx;},
+	          'cy': function(d){return d.cy;},
+	          'r': function(d){return d.r;},
+	          'fill': function(d){return d.fill;}
+	        });
+	        // .call(drag);
+
+</script>  
+	<script type="text/javascript">
+			var serializer = new XMLSerializer();
+			var canvas = document.createElement("canvas");
+			canvas.width = width;
+			canvas.height = height;
+
+			var context = canvas.getContext("2d");
+			var image = new Image;
+		function downloadPng() {
+			var source = serializer.serializeToString(svg.node());
+
+	        console.log("SVG.NODE:"); 
+	        console.log(svg.node()); 
+	        
+			source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+			var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+			document.write('<br/><img src="' + url + '"/>');
+
+			image.src = document.getElementsByTagName('img')[0].src;  
+  			context.drawImage(image, 0, 0);
+ 
+  			var a = document.createElement("a");
+  			a.download = "fallback.png";
+  			a.href = canvas.toDataURL("image/png");
+  			a.click();
+		};
+	</script>
+</body>  
+</html>  
