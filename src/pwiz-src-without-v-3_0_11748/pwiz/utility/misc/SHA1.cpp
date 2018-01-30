@@ -16,7 +16,7 @@
 #include "SHA1.h"
 #include <boost/nowide/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+//#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
@@ -193,7 +193,7 @@ bool CSHA1::HashFile(const TCHAR* tszFileName)
 		ifstream fpIn(tszFileName, std::ios::binary);
 		if (!fpIn) return false;
 
-		const INT_64 lFileSize = boost::filesystem::file_size(boost::filesystem::path(tszFileName, boost::filesystem::detail::utf8_codecvt_facet()));
+		const INT_64 lFileSize = boost::filesystem::file_size(boost::filesystem::path(tszFileName));
 		const INT_64 lMaxBuf = SHA1_MAX_FILE_BUFFER;
 		char vData[SHA1_MAX_FILE_BUFFER];
 		INT_64 lRemaining = lFileSize;

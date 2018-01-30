@@ -27,12 +27,12 @@
 #include <iomanip>
 #include <boost/iostreams/operations.hpp>
 #include "pwiz/utility/misc/optimized_lexical_cast.hpp"
-#include <boost/nowide/fstream.hpp>
-#include <boost/nowide/iostream.hpp>
-#include <boost/nowide/args.hpp>
+//#include <boost/nowide/fstream.hpp>
+//#include <boost/nowide/iostream.hpp>
+//#include <boost/nowide/args.hpp>
 
 namespace bio = boost::iostreams;
-namespace bnw = boost::nowide;
+//namespace std = boost::nowide;
 
 using std::ios;
 using std::iostream;
@@ -42,9 +42,9 @@ using std::ostream;
 using std::istream_iterator;
 using std::ostream_iterator;
 
-using bnw::fstream;
-using bnw::ifstream;
-using bnw::ofstream;
+using std::fstream;
+using std::ifstream;
+using std::ofstream;
 
 using std::stringstream;
 using std::istringstream;
@@ -56,9 +56,9 @@ using std::streampos;
 using std::streamoff;
 using std::streamsize;
 
-using bnw::cin;
-using bnw::cout;
-using bnw::cerr;
+using std::cin;
+using std::cout;
+using std::cerr;
 using std::endl;
 using std::flush;
 
