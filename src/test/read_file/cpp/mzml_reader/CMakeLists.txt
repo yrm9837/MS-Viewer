@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.1)
 project(msReader)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/../bin)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
@@ -12,6 +13,7 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
                       /usr/include/libpwiz/libraries/boost_aux)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
 
+#file(GLOB READER_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/reader/*.cpp)
 file(GLOB READER_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/msdata/*.cpp)
 
 add_executable(msReader ${READER_SRCS})

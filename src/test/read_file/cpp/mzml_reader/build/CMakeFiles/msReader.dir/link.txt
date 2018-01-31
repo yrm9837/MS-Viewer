@@ -1,1 +1,1 @@
-/usr/bin/c++      CMakeFiles/msReader.dir/src/msdata/Test.cpp.o  -o ../bin/msReader -rdynamic -lboost_filesystem -lboost_system -lpwiz 
+/usr/bin/c++    -std=c++11   CMakeFiles/msReader.dir/src/msdata/Test.cpp.o  -o ../bin/msReader -rdynamic -lboost_filesystem -lboost_system -lpwiz 

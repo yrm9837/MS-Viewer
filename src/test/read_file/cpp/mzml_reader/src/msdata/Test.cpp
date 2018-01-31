@@ -51,7 +51,7 @@ void test(bool indexed)
     ostringstream oss;
     serializer.write(oss, tiny);
 
-    // if (os_) *os_ << "oss:\n" << oss.str() << endl << "FINISED" << endl;
+    if (os_) *os_ << "oss:\n" << oss.str() << endl << "FINISED" << endl;
 
     shared_ptr<istream> is(new istringstream(oss.str()));
 
@@ -183,24 +183,9 @@ void test(bool indexed)
     }
 }
 
-void readTest(bool indexed)
+void readTest(bool indexed, char *filename)
 {
-    if (os_) *os_ << "test(): indexed=\"" << boolalpha << indexed << "\"\n";
-
-    MSData tiny;
-    examples::initializeTiny(tiny);
-
-    Serializer_mzML::Config config;
-    config.indexed = indexed;
-    Serializer_mzML serializer(config);  
-
-    ostringstream oss;
-    serializer.write(oss, tiny);
-
-    // if (os_) *os_ << "oss:\n" << oss.str() << endl << "FINISED" << endl;
-
-    shared_ptr<istream> is(new istringstream(oss.str()));
-
+  
     // dummy would normally be read in from file
   
     MSData dummy;
@@ -222,12 +207,19 @@ void readTest(bool indexed)
     dummy.instrumentConfigurationPtrs.push_back(InstrumentConfigurationPtr(new InstrumentConfiguration("LCQ Deca")));
     dummy.dataProcessingPtrs.push_back(DataProcessingPtr(new DataProcessing("CompassXtract processing")));
 
+
+    boost::shared_ptr<std::istream> is(new std::ifstream(filename));
+
     Index_mzML_Ptr index(new Index_mzML(is, dummy));
+
     SpectrumListPtr sl = SpectrumList_mzML::create(is, dummy, index);
+
+    std::cout << "file: " << filename << std::endl;
 
     SpectrumPtr s; // read without binary data
     vector<MZIntensityPair> pairs;
-    
+
+    std::cout << "size: " << sl->size() << std::endl;
     for(int i = 0; i < sl->size(); i++){
         if (os_) *os_ << i << " : " << sl->spectrumIdentity(i).id << endl;
         s = sl->spectrum(i, true);
@@ -244,8 +236,8 @@ void test()
     bool indexed = true;
     test(indexed);
 
-    indexed = false;
-    test(indexed);
+    // indexed = false;
+    // test(indexed);
 }
 
 
@@ -255,9 +247,14 @@ int main(int argc, char* argv[])
 
     try
     {
-        if (argc>1 && !strcmp(argv[1],"-v")) os_ = &cout;
+        // if (argc>1 && !strcmp(argv[1],"-v")) os_ = &cout;
         // test();
-        readTest(true);
+        if (argc < 2) {
+        std::cout << argv[0] << " file.mzML" << std::endl;
+        return EXIT_FAILURE;
+        }
+        os_ = &cout;
+        readTest(true,argv[1]);
     }
     catch (exception& e)
     {
