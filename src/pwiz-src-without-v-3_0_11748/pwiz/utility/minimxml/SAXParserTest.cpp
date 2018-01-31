@@ -584,7 +584,9 @@ void testSaxParserString()
 
 int main(int argc, char* argv[])
 {
+    std::cout<<"Running..."<<endl;
     TEST_PROLOG(argc, argv)
+    std::cout<<argc<<endl;
 
     try
     {

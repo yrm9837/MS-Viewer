@@ -1,0 +1,2 @@
+test(): indexed="true"
+5
