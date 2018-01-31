@@ -14,7 +14,8 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
 
 #file(GLOB READER_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/reader/*.cpp)
-file(GLOB READER_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/msdata/*.cpp)
+#file(GLOB READER_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/msdata/*.cpp)
+file(GLOB READER_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/test/*.cpp)
 
 add_executable(msReader ${READER_SRCS})
 
