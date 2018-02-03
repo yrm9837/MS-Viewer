@@ -57,38 +57,38 @@ include CMakeFiles/msReader.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/msReader.dir/flags.make
 
-CMakeFiles/msReader.dir/src/msdata/Test.cpp.o: CMakeFiles/msReader.dir/flags.make
-CMakeFiles/msReader.dir/src/msdata/Test.cpp.o: ../src/msdata/Test.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/msReader.dir/src/msdata/Test.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/msReader.dir/src/msdata/Test.cpp.o -c /home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/src/msdata/Test.cpp
+CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o: CMakeFiles/msReader.dir/flags.make
+CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o: ../src/reader/spec_list_mzml.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o -c /home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/src/reader/spec_list_mzml.cpp
 
-CMakeFiles/msReader.dir/src/msdata/Test.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/msReader.dir/src/msdata/Test.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/src/msdata/Test.cpp > CMakeFiles/msReader.dir/src/msdata/Test.cpp.i
+CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/src/reader/spec_list_mzml.cpp > CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.i
 
-CMakeFiles/msReader.dir/src/msdata/Test.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/msReader.dir/src/msdata/Test.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/src/msdata/Test.cpp -o CMakeFiles/msReader.dir/src/msdata/Test.cpp.s
+CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/src/reader/spec_list_mzml.cpp -o CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.s
 
-CMakeFiles/msReader.dir/src/msdata/Test.cpp.o.requires:
+CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o.requires:
 
-.PHONY : CMakeFiles/msReader.dir/src/msdata/Test.cpp.o.requires
+.PHONY : CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o.requires
 
-CMakeFiles/msReader.dir/src/msdata/Test.cpp.o.provides: CMakeFiles/msReader.dir/src/msdata/Test.cpp.o.requires
-	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/src/msdata/Test.cpp.o.provides.build
-.PHONY : CMakeFiles/msReader.dir/src/msdata/Test.cpp.o.provides
+CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o.provides: CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o.requires
+	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o.provides.build
+.PHONY : CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o.provides
 
-CMakeFiles/msReader.dir/src/msdata/Test.cpp.o.provides.build: CMakeFiles/msReader.dir/src/msdata/Test.cpp.o
+CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o.provides.build: CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o
 
 
 # Object files for target msReader
 msReader_OBJECTS = \
-"CMakeFiles/msReader.dir/src/msdata/Test.cpp.o"
+"CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o"
 
 # External object files for target msReader
 msReader_EXTERNAL_OBJECTS =
 
-../bin/msReader: CMakeFiles/msReader.dir/src/msdata/Test.cpp.o
+../bin/msReader: CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o
 ../bin/msReader: CMakeFiles/msReader.dir/build.make
 ../bin/msReader: CMakeFiles/msReader.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yangrun/Documents/js_project/spectra_visualization/src/test/read_file/cpp/mzml_reader/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../bin/msReader"
@@ -99,7 +99,7 @@ CMakeFiles/msReader.dir/build: ../bin/msReader
 
 .PHONY : CMakeFiles/msReader.dir/build
 
-CMakeFiles/msReader.dir/requires: CMakeFiles/msReader.dir/src/msdata/Test.cpp.o.requires
+CMakeFiles/msReader.dir/requires: CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o.requires
 
 .PHONY : CMakeFiles/msReader.dir/requires
 

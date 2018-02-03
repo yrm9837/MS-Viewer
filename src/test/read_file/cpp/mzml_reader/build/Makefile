@@ -123,32 +123,32 @@ msReader/fast:
 	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/build
 .PHONY : msReader/fast
 
-src/msdata/Test.o: src/msdata/Test.cpp.o
+src/reader/spec_list_mzml.o: src/reader/spec_list_mzml.cpp.o
 
-.PHONY : src/msdata/Test.o
+.PHONY : src/reader/spec_list_mzml.o
 
 # target to build an object file
-src/msdata/Test.cpp.o:
-	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/src/msdata/Test.cpp.o
-.PHONY : src/msdata/Test.cpp.o
+src/reader/spec_list_mzml.cpp.o:
+	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o
+.PHONY : src/reader/spec_list_mzml.cpp.o
 
-src/msdata/Test.i: src/msdata/Test.cpp.i
+src/reader/spec_list_mzml.i: src/reader/spec_list_mzml.cpp.i
 
-.PHONY : src/msdata/Test.i
+.PHONY : src/reader/spec_list_mzml.i
 
 # target to preprocess a source file
-src/msdata/Test.cpp.i:
-	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/src/msdata/Test.cpp.i
-.PHONY : src/msdata/Test.cpp.i
+src/reader/spec_list_mzml.cpp.i:
+	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.i
+.PHONY : src/reader/spec_list_mzml.cpp.i
 
-src/msdata/Test.s: src/msdata/Test.cpp.s
+src/reader/spec_list_mzml.s: src/reader/spec_list_mzml.cpp.s
 
-.PHONY : src/msdata/Test.s
+.PHONY : src/reader/spec_list_mzml.s
 
 # target to generate assembly for a file
-src/msdata/Test.cpp.s:
-	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/src/msdata/Test.cpp.s
-.PHONY : src/msdata/Test.cpp.s
+src/reader/spec_list_mzml.cpp.s:
+	$(MAKE) -f CMakeFiles/msReader.dir/build.make CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.s
+.PHONY : src/reader/spec_list_mzml.cpp.s
 
 # Help Target
 help:
@@ -159,9 +159,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... msReader"
-	@echo "... src/msdata/Test.o"
-	@echo "... src/msdata/Test.i"
-	@echo "... src/msdata/Test.s"
+	@echo "... src/reader/spec_list_mzml.o"
+	@echo "... src/reader/spec_list_mzml.i"
+	@echo "... src/reader/spec_list_mzml.s"
 .PHONY : help
 
 

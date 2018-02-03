@@ -1,0 +1,22 @@
+<html>
+<body>
+<h3>文件上传：</h3>
+选择一个文件上传: <br />
+<input type="file" id="file" name="file" size="50" 
+onchange="getPath()" />
+<form action="http://127.0.0.1:8081/process_post" method="POST">
+<input type="text" id="filePath" name="filePath"><br />
+First Name: <input type="text" name="first_name">  <br />
+Last Name: <input type="text" name="last_name">
+<input type="submit" value="Submit">
+</form>
+</body>
+</html>
+
+
+<script>
+	function getPath() {
+		var filename = document.getElementById('file').value;
+		document.getElementById('filePath').value = filename.substr(12, filename.length - 12);
+	}
+</script>

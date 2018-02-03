@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/msReader.dir/src/msdata/Test.cpp.o"
+  "CMakeFiles/msReader.dir/src/reader/spec_list_mzml.cpp.o"
   "../bin/msReader.pdb"
   "../bin/msReader"
 )
