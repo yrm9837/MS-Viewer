@@ -12,7 +12,7 @@
         <legend>Read files：</legend>
 		<input type="file" id="file" name="file" size="50" 
 		onchange="getPath()" />
-		<input type="text" id="rawFilePath" name="rawFilePath"><br />
+		<input type="hidden" id="rawFilePath" name="rawFilePath">
 		<input type="submit" value="Submit" onclick="filePathPost()">
     </fieldset>
     <label>Scan=</label>
@@ -113,6 +113,7 @@
 						}
 					}
 					convertData();
+					cmpMassIntensity();
 					addPeaks();
 					addTexts();
 					addAxis();
@@ -166,6 +167,7 @@
 
 		svg.call(xZoom.translate([0,0]).scale(1).event);
 		svg.call(yZoom.translate([0,0]).scale(1).event);
+		dragx = 0;
 
 		var currSelectValue = Number(scanSelect.value);
 		nowScan = currSelectValue;
@@ -266,10 +268,14 @@
 
 	var peakmass = [];
 	var peakintensity = [];
+	var peakmassShow = [];
+	var peakintensityShow = [];
 	var maxPeakintensity = 0;
 	var notesmass = [];
 	var notesintensity = [];
 	var notestype = [];
+	var maxPeaksCount = 1000;
+
 	function convertData() {
 		var i = peakData.length;
 		while(i--) {
@@ -319,12 +325,40 @@
 
 	}
 	convertData();
+	cmpMassIntensity();
+	function cmpMassIntensity() {
+		peakmassShow = [];
+		peakintensityShow = [];
+		var peakCount = 0;
+		for(var i = 0; i < peakmass.length; i++) {
+			var tmpx = (xScale(peakmass[i]) + dragx) * xs + x;
+			if (tmpx > 0 && tmpx < xRange){
+				if(peakCount == 0) {
+					peakmassShow[peakCount] = peakmass[i];
+					peakintensityShow[peakCount] = peakintensity[i];
+					peakCount++;
+				} else {
+					if(xScale(peakmass[i])-xScale(peakmassShow[peakCount-1]) < xRange/(maxPeaksCount*xs)) {
+						if(peakintensity[i]>peakintensityShow[peakCount-1]) {
+							peakmassShow[peakCount-1] = peakmass[i];
+							peakintensityShow[peakCount-1] = peakintensity[i];
+						}
+					} else {
+						peakmassShow[peakCount] = peakmass[i];
+						peakintensityShow[peakCount] = peakintensity[i];
+						peakCount++;
+					}
+				}
+			}
+		}	
+		console.log("peakCount:"+peakCount);
+	}
 
 
 	var peaks = group_top.selectAll(".MyPeak")
 	//添加peaks元素
 	function addPeaks() {
-		peaks.data(peakmass)
+		peaks.data(peakmassShow)
 		.enter()
 		.append("line")
 		.attr("class","MyPeak")
@@ -333,7 +367,7 @@
 			return xScale(d);
 		} )
 		.attr("y1",function(d,i){
-			return yScale(peakintensity[i]);
+			return yScale(peakintensityShow[i]);
 		})
 		.attr("x2",function(d,i){
 			return xScale(d);
@@ -362,8 +396,8 @@
 			console.log("d:"+d);
 			console.log("i:"+i);
 			console.log("x:"+xScale(d));
-			console.log("y:"+(yScale(peakintensity[i])-10));
-			var tmpData = [[xScale(d),yScale(peakintensity[i])]];
+			console.log("y:"+(yScale(peakintensityShow[i])-10));
+			var tmpData = [[d,yScale(peakintensityShow[i])]];
 			d3.select(t).attr("stroke","red")
 				.attr("stroke-width","3");
 			textMZ = group_top.selectAll(".MyTextMZ")
@@ -373,7 +407,7 @@
 				.attr("class","MyTextMZ")
 				.attr("transform","translate(" + padding.left + "," + padding.top + ")")
 				.attr("x", function(d) {
-					var tmpx = (d[0] + dragx) * xs + x;
+					var tmpx = (xScale(d[0]) + dragx) * xs + x;
 			  		if (tmpx > 0 && tmpx < xRange){
 			  			return tmpx;
 			  		}else{
@@ -401,7 +435,7 @@
 				.attr("class","MyTextMZ")
 				.attr("transform","translate(" + padding.left + "," + padding.top + ")")
 				.attr("x", function(d) {
-					var tmpx = (d[0] + dragx) * xs + x;
+					var tmpx = (xScale(d[0]) + dragx) * xs + x;
 			  		if (tmpx > 0 && tmpx < xRange){
 			  			return tmpx;
 			  		}else{
@@ -420,7 +454,7 @@
 			  		}
 				})
 				.text(function(d){
-					return "I:"+peakintensity[i]*100+"%";
+					return "I:"+peakintensityShow[i]*100+"%";
 				});
 	};
 	function out(t,d){
@@ -510,7 +544,10 @@
 		    var ysi = d3.interpolate(ys, 1);
 		    var xi = d3.interpolate(x - padding.left * (xs - 1), 0);
 		    var yi = d3.interpolate(y, 0);
+		    var dragxi = d3.interpolate(dragx, 0);
 		    return function(t){
+		      dragx = dragxi(t);
+			  dragd_drag = xDomain*dragx/xRange;
 		      svg.call(xZoom.translate([xi(t),yi(t)]).scale(xsi(t)).event);
 		      svg.call(yZoom.translate([xi(t),yi(t)]).scale(ysi(t)).event);
 		 	}
@@ -519,6 +556,7 @@
 	}
 
 	function reset() {
+		cmpMassIntensity();
 	  	group_top.selectAll(".MyText")
 	  	.attr("x", function(d,i){
 	  		var tmpx = (xScale(d) + dragx) * xs + x;
@@ -539,7 +577,8 @@
 	  			return tmpy;
 	  		}
 	  	});
-	  	group_top.selectAll(".MyPeak")	
+		var updatePeak = group_top.selectAll(".MyPeak").data(peakmassShow);
+	  	updatePeak	
 		.attr("x1",function(d,i){
 	  		var tmpx = (xScale(d) + dragx) * xs + x;
 	  		if (tmpx > 0 && tmpx < xRange){
@@ -549,7 +588,7 @@
 	  		}
 		} )	
 		.attr("y1",function(d,i){
-			var yHight = height - padding.bottom - padding.top - yScale(peakintensity[i]);
+			var yHight = height - padding.bottom - padding.top - yScale(peakintensityShow[i]);
 	  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
 	  		if (tmpy > height - padding.bottom){
 	  			return height - padding.bottom;
@@ -567,6 +606,54 @@
 	  			return -1000;
 	  		}
 		});
+		updatePeak
+		.enter()
+		.append("line")
+		.attr("class","MyPeak")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x1",function(d,i){
+	  		var tmpx = (xScale(d) + dragx) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+		} )	
+		.attr("y1",function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale(peakintensityShow[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+		} )
+		.attr("x2",function(d,i){
+	  		var tmpx = (xScale(d) + dragx) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+		})
+		.attr("y2",height - padding.bottom - padding.top)
+		.attr("stroke",function(d,i){
+			if(notesmass.indexOf(d) != -1){
+				return "steelblue";
+			}else{
+				return "black";
+			}
+		})
+		.attr("stroke-width","2")
+		.on("mouseover",function(d,i){
+			over(this,d,i);
+		})
+		.on("mouseout",function(d,i){
+			out(this,d);
+		});
+	  	updatePeak.exit().remove();
 		// var dragd = xDomain*x/(xRange*s);
 		dragd_zoom = xDomain*x/(xRange*xs);
 		//x轴的比例尺

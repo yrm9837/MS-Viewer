@@ -1,0 +1,1211 @@
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>A simple specctrum</title>  
+
+	<style type="text/css">
+		.axis path,
+		.axis line{
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+
+		.axis text {
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+
+		.MyText {
+			fill: red;
+			text-anchor: middle;
+			font-size: 10px;
+		}
+		.MyTextMZ {
+			fill: red;
+			text-anchor: middle;
+			font-size: 10px;
+		}
+				
+		.container{
+		    height:40%;
+		    width:100%;
+		}
+
+	</style>
+</head> 
+
+
+<body>  
+
+    <fieldset>
+        <legend>Read files：</legend>
+		<input type="file" id="file" name="file" size="50" 
+		onchange="getPath()" />
+		<input type="hidden" id="rawFilePath" name="rawFilePath">
+		<input type="submit" value="Submit" onclick="filePathPost()">
+    </fieldset>
+	<div class="container" id="container">
+	    <label>MS1 Scan=</label>
+	    <select id="Select"></select>
+	<!--     <input type="button" value="Download" id="Download_as_png_ms1" onclick="downloadPng()" />
+	    <br/> -->
+		<svg id="ms1svg">
+		</svg>
+	    <label>MS2 Scan=</label>
+	    <select id="Select2"></select>
+		<svg id="ms2svg">
+		</svg>
+	</div>
+
+<script>
+	var isLoading = false;
+	function getPath() {
+		var filename = document.getElementById('file').value;
+		document.getElementById('rawFilePath').value = filename.substr(12, filename.length - 12);
+	}
+    function filePathPost(){
+        var xhr=new XMLHttpRequest();
+        xhr.open("POST","http://127.0.0.1:8081/file_path_post",true);
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if(xhr.status==200){
+                    console.log(xhr.responseText);
+					var scanNum = 0;
+					var allScan = xhr.responseText.split("\t");
+					for (var i = 0; i < allScan.length; i++) {
+						if (allScan[i].length > 1) {
+							var singleScan = allScan[i].split(",");
+							scanIndex[scanNum] = Number(singleScan[0]);
+							scanList[scanNum] = Number(singleScan[1]);
+							addScan(scanSelect,singleScan[1]);
+							scanNum++;
+						}
+					}
+					scanChanged()
+                }
+            }
+        }
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        // console.log("filePath="+document.getElementById("rawFilePath").value);
+        xhr.send("filePath="+document.getElementById("rawFilePath").value);
+        filePathPost2();
+    }
+    function scanPost(nowScanIndex){
+        var xhr=new XMLHttpRequest();
+        xhr.open("POST","http://127.0.0.1:8081/scan_post",true);
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if(xhr.status==200){
+					var peakNum = 0;
+					var allPeak = xhr.responseText.split("\t");
+					for (var i = 0; i < allPeak.length; i++) {
+						if (allPeak[i].length > 1) {
+							var singlePeak = allPeak[i].split(",");
+							peakData[peakNum] = [Number(singlePeak[0]),Number(singlePeak[1])];
+							peakNum++;
+						}
+					}
+					convertData();
+					cmpMassIntensity();
+					addPeaks();
+					addTexts();
+					addAxis();
+            	}
+            }
+        }
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        console.log("nowScan="+nowScan);
+        console.log("nowScanIndex="+nowScanIndex);
+        xhr.send("nowScanIndex="+nowScanIndex);
+    }
+    function filePathPost2(){
+        var xhr=new XMLHttpRequest();
+        xhr.open("POST","http://127.0.0.1:8081/file_path_post2",true);
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if(xhr.status==200){
+                    console.log(xhr.responseText);
+					var scanNum = 0;
+					var allScan = xhr.responseText.split("\t");
+					for (var i = 0; i < allScan.length; i++) {
+						if (allScan[i].length > 1) {
+							var singleScan = allScan[i].split(",");
+							scanIndex2[scanNum] = Number(singleScan[0]);
+							scanList2[scanNum] = Number(singleScan[1]);
+							addScan(scanSelect2,singleScan[1]);
+							scanNum++;
+						}
+					}
+					scanChanged2()
+                }
+            }
+        }
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        // console.log("filePath="+document.getElementById("rawFilePath").value);
+        xhr.send("filePath="+document.getElementById("rawFilePath").value);
+    }
+    function scanPost2(nowScanIndex){
+        var xhr=new XMLHttpRequest();
+        xhr.open("POST","http://127.0.0.1:8081/scan_post",true);
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if(xhr.status==200){
+					var peakNum = 0;
+					var allPeak = xhr.responseText.split("\t");
+					for (var i = 0; i < allPeak.length; i++) {
+						if (allPeak[i].length > 1) {
+							var singlePeak = allPeak[i].split(",");
+							peakData2[peakNum] = [Number(singlePeak[0]),Number(singlePeak[1])];
+							peakNum++;
+						}
+					}
+					convertData2();
+					cmpMassIntensity2();
+					addPeaks2();
+					addAxis2();
+            	}
+            }
+        }
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        console.log("nowScan="+nowScan2);
+        console.log("nowScanIndex="+nowScanIndex);
+        xhr.send("nowScanIndex="+nowScanIndex);
+    }
+</script>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+<script>
+	var nowScan = -1;
+	var scanList = [];
+	var scanIndex = [];
+	var peakData = [];
+	var annotationData = [];
+	var scanSelect = document.getElementById("Select");
+	scanSelect.onchange = scanChanged;
+
+	// 1.判断select选项中 是否存在Value="paraValue"的Item 
+	function jsSelectIsExitItem(objSelect, objItemValue) { 
+		var isExit = false; 
+		for (var i = 0; i < objSelect.options.length; i++) { 
+			if (objSelect.options[i].value == objItemValue) { 
+				isExit = true; 
+				break; 
+			} 
+		} 
+		return isExit; 
+	} 
+
+	// 2.向select选项中 加入一个Item 
+	function addScan(objSelect,scan){
+
+		//判断是否存在 
+		if (jsSelectIsExitItem(objSelect, scan)) { 
+			// console.log("该Item的Value值已经存在"+scan); 
+		} else { 
+			var varItem = new Option(scan, scan); 
+			objSelect.options.add(varItem); 
+			// console.log("成功加入"); 
+		} 
+	}
+
+	function scanChanged(){
+
+		svg.call(xZoom.translate([0,0]).scale(1).event);
+		svg.call(yZoom.translate([0,0]).scale(1).event);
+		dragx = 0;
+
+		var currSelectValue = Number(scanSelect.value);
+		nowScan = currSelectValue;
+		group_top.selectAll(".MyPeak").remove()
+		group_top.selectAll(".MyText").remove()
+		group_bottom.selectAll("g").remove()
+		group_top.selectAll("g").remove()
+		scanPost(scanSelect.selectedIndex);
+		if(!isLoading) {
+			isLoading = true;
+			var MS2ScanIndex = getMS2Scan(scanIndex[scanSelect.selectedIndex]);
+			scanSelect2.selectedIndex = MS2ScanIndex;
+			scanChanged2();
+			isLoading = false;
+			// console.log("MS2ScanIndex:"+MS2ScanIndex);
+		}
+	}
+	function getMS2Scan(MS1ScanIndex) {
+		// console.log("scanIndex2.length:"+scanIndex2.length);
+		for (var i = 0; i < scanIndex2.length; i++) {
+			// console.log("<MS1ScanIndex,scanIndex2[i]>:<"+MS1ScanIndex+","+scanIndex2[i]+">");
+			if (MS1ScanIndex < scanIndex2[i]) {
+				return i;
+			}
+		}
+		return 0;
+	}
+
+	//画布大小
+	var width = 1000;
+	var height = 400;
+
+	var x = 0;
+	var y = 0;
+	var xs = 1;
+	var ys = 1;
+
+	var xZoom = d3.behavior.zoom()
+		.translate([0, 0])
+		.scaleExtent([1, 100000000])
+		.scale(1)
+		.on("zoom", xZoomed);
+	var yZoom = d3.behavior.zoom()
+		.translate([0, 0])
+		.scaleExtent([1, 100000000])
+		.scale(1)
+		.on("zoom", yZoomed);
+
+	//开启拖动
+	var drag = d3.behavior.drag()
+	    .on("dragstart", dragstarted)
+	    .on("drag", dragged)
+	    .on("dragend", dragended);
+	var dragx = 0;
+	var dragd_zoom = 0;
+	var dragd_drag = 0;
+
+	var container = d3.select("body")
+		.select(".container");
+
+
+	//画布周边的空白
+	var padding = {left:100, right:100, top:50, bottom:50};
+
+	//在 body 里添加一个 SVG 画布	
+	var svg = container.select("#ms1svg")
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("viewBox", "0 0 "+width+" "+height)
+		.attr("width", "100%")
+		.attr("height", "100%")
+        .on('dblclick.zoom', init)
+      	.call(drag);
+    var group_top = svg.append("g")
+        .call(yZoom);
+    var tect_top = group_top.append("rect")
+    	.attr("x","0")
+    	.attr("y","0")
+    	.attr("width",width)
+    	.attr("height",height - padding.bottom)
+    	.attr("style","fill:rgb(255,255,255);stroke-width:0;stroke:rgb(0,0,0);fill-opacity:0");
+    var group_bottom = svg.append("g")
+        .call(xZoom)
+        .on('mousedown', function(){
+			svg.attr("cursor","move");
+        })
+        .on('mouseup', function(){
+			svg.attr("cursor","default");
+        });
+    var tect_bottom = group_bottom.append("rect")
+    	.attr("x","0")
+    	.attr("y",height - padding.bottom)
+    	.attr("width",width)
+    	.attr("height",padding.bottom)
+    	.attr("style","fill:rgb(255,255,255);stroke-width:0;stroke:rgb(0,0,0);fill-opacity:0");
+
+	var peakData = [];
+	var annotationData = [];
+	
+	var xDomain;
+	var xRange;
+	var xScale;
+	var yScale;
+	var xAxis;
+	var yAxis;
+
+
+	var peakmass = [];
+	var peakintensity = [];
+	var peakmassShow = [];
+	var peakintensityShow = [];
+	var maxPeakintensity = 0;
+	var notesmass = [];
+	var notesintensity = [];
+	var notestype = [];
+	var maxPeaksCount = 1000;
+
+	function convertData() {
+		var i = peakData.length;
+		while(i--) {
+			peakmass[i] = peakData[i][0];
+			peakintensity[i] = peakData[i][1];
+		}
+		maxPeakintensity = d3.max(peakintensity);
+		var i = peakintensity.length;
+		while(i--) {
+			peakintensity[i] = peakintensity[i] / maxPeakintensity
+		}
+		i = annotationData.length;
+		while(i--) {
+			notesmass[i] = annotationData[i][0];
+			notesintensity[i] = annotationData[i][1] / maxPeakintensity;
+			notestype[i] = annotationData[i][2];
+		}
+		console.log(peakmass);
+		console.log(peakintensity);
+		console.log(notesmass);
+		console.log(notesintensity);
+		console.log(notestype);
+
+		xDomain = d3.max(peakmass) * 1.1 - d3.min(peakmass) * 0.1
+		xRange = width - padding.left - padding.right
+		//x轴的比例尺
+		xScale = d3.scale.linear()
+			.domain([0,xDomain])
+			.range([0, xRange]);
+		//y轴的比例尺
+		yScale = d3.scale.linear()
+			.domain([0,d3.max(peakintensity)])
+			.range([height - padding.top - padding.bottom, 0]);
+
+		//定义x轴
+		xAxis = d3.svg.axis()
+			.scale(xScale)
+			.orient("bottom")
+	        .ticks(10);
+			
+		//定义y轴
+		yAxis = d3.svg.axis()
+			.scale(yScale)
+			.orient("left")
+    		.tickFormat(function(d) { return Math.round(d * 100 / d3.max(peakintensity)) + "%"; })
+        	.ticks(10);
+
+	}
+	convertData();
+	cmpMassIntensity();
+	function cmpMassIntensity() {
+		peakmassShow = [];
+		peakintensityShow = [];
+		var peakCount = 0;
+		for(var i = 0; i < peakmass.length; i++) {
+			var tmpx = (xScale(peakmass[i]) + dragx) * xs + x;
+			if (tmpx > 0 && tmpx < xRange){
+				if(peakCount == 0) {
+					peakmassShow[peakCount] = peakmass[i];
+					peakintensityShow[peakCount] = peakintensity[i];
+					peakCount++;
+				} else {
+					if(xScale(peakmass[i])-xScale(peakmassShow[peakCount-1]) < xRange/(maxPeaksCount*xs)) {
+						if(peakintensity[i]>peakintensityShow[peakCount-1]) {
+							peakmassShow[peakCount-1] = peakmass[i];
+							peakintensityShow[peakCount-1] = peakintensity[i];
+						}
+					} else {
+						peakmassShow[peakCount] = peakmass[i];
+						peakintensityShow[peakCount] = peakintensity[i];
+						peakCount++;
+					}
+				}
+			}
+		}	
+		console.log("peakCount:"+peakCount);
+	}
+
+
+	var peaks = group_top.selectAll(".MyPeak")
+	//添加peaks元素
+	function addPeaks() {
+		peaks.data(peakmassShow)
+		.enter()
+		.append("line")
+		.attr("class","MyPeak")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x1",function(d,i){
+			return xScale(d);
+		} )
+		.attr("y1",function(d,i){
+			return yScale(peakintensityShow[i]);
+		})
+		.attr("x2",function(d,i){
+			return xScale(d);
+		})
+		.attr("y2",height - padding.bottom - padding.top)
+		.attr("stroke",function(d,i){
+			if(notesmass.indexOf(d) != -1){
+				return "steelblue";
+			}else{
+				return "black";
+			}
+		})
+		.attr("stroke-width","2")
+		.on("mouseover",function(d,i){
+			over(this,d,i);
+		})
+		.on("mouseout",function(d,i){
+			out(this,d);
+		});
+	}
+	var textMZ;
+	var textIN;
+	function over(t,d,i){
+			console.log("d:"+d);
+			console.log("i:"+i);
+			console.log("x:"+xScale(d));
+			console.log("y:"+(yScale(peakintensityShow[i])-10));
+			var tmpData = [[d,yScale(peakintensityShow[i])]];
+			d3.select(t).attr("stroke","red")
+				.attr("stroke-width","3");
+			textMZ = group_top.selectAll(".MyTextMZ")
+				.data(tmpData)
+				.enter()
+				.append("text")
+				.attr("class","MyTextMZ")
+				.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+				.attr("x", function(d) {
+					var tmpx = (xScale(d[0]) + dragx) * xs + x;
+			  		if (tmpx > 0 && tmpx < xRange){
+			  			return tmpx;
+			  		}else{
+			  			return -1000;
+			  		}
+				})
+				.attr("y", function(d) {
+					var yHight = height - padding.bottom - padding.top - d[1];
+			  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+			  		if (tmpy > height - padding.bottom){
+			  			return height - padding.bottom - 20;
+			  		}else if (tmpy < 0){
+			  			return 0 - 20;
+			  		}else {
+			  			return tmpy - 20;
+			  		}
+				})
+				.text(function(d){
+					return "M:"+d[0];
+				});
+			textIN = group_top.selectAll(".MyTextIN")
+				.data(tmpData)
+				.enter()
+				.append("text")
+				.attr("class","MyTextMZ")
+				.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+				.attr("x", function(d) {
+					var tmpx = (xScale(d[0]) + dragx) * xs + x;
+			  		if (tmpx > 0 && tmpx < xRange){
+			  			return tmpx;
+			  		}else{
+			  			return -1000;
+			  		}
+				})
+				.attr("y", function(d) {
+					var yHight = height - padding.bottom - padding.top - d[1];
+			  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+			  		if (tmpy > height - padding.bottom){
+			  			return height - padding.bottom - 10;
+			  		}else if (tmpy < 0){
+			  			return 0 - 10;
+			  		}else {
+			  			return tmpy - 10;
+			  		}
+				})
+				.text(function(d){
+					return "I:"+peakintensityShow[i]*100+"%";
+				});
+	};
+	function out(t,d){
+		d3.select(t)
+			.transition()
+	        .duration(500)
+			.attr("stroke",function(d){
+				if(notesmass.indexOf(d) != -1){
+					return "steelblue";
+				}else{
+					return "black";
+				}
+			})
+			.attr("stroke-width","2");
+
+		textMZ.remove();
+		textIN.remove();
+	};
+
+	//添加注释文字
+	var textshiftx = 0;
+	var textshifty = -5;
+	var texts = group_top.selectAll(".MyText")
+	function addTexts() {
+		texts.data(notesmass)
+		.enter()
+		.append("text")
+		.attr("class","MyText")
+		.attr("transform","translate(" + (padding.left + textshiftx) + "," + (padding.top + textshifty) + ")")
+		.attr("x", function(d,i){
+			return xScale(d);
+		} )
+		.attr("y",function(d,i){
+			return yScale(notesintensity[i]);
+		})
+		.text(function(d,i){
+			return notestype[i];
+		});
+      	// .call(drag);
+	}
+	// addTexts();
+
+	function addAxis() {
+		//添加x轴
+		group_bottom.append("g")
+			.attr("id","xAxis")
+			.attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + (height - padding.bottom) + ")")
+			.call(xAxis); 
+			
+		//添加y轴
+		group_top.append("g")
+			.attr("id","yAxis")
+			.attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+			.call(yAxis);
+	}
+	// addAxis();
+
+
+	function xZoomed() {
+		xs=d3.event.scale;
+		x=d3.event.translate[0] + padding.left * (xs - 1);
+		reset();
+	};
+	function yZoomed() {
+		ys=d3.event.scale;
+		reset();
+	};
+
+	function init() {
+		d3.transition().duration(500).tween("zoom", function() {
+		    var xsi = d3.interpolate(xs, 1);
+		    var ysi = d3.interpolate(ys, 1);
+		    var xi = d3.interpolate(x - padding.left * (xs - 1), 0);
+		    var yi = d3.interpolate(y, 0);
+		    var dragxi = d3.interpolate(dragx, 0);
+		    return function(t){
+		      dragx = dragxi(t);
+			  dragd_drag = xDomain*dragx/xRange;
+		      svg.call(xZoom.translate([xi(t),yi(t)]).scale(xsi(t)).event);
+		      svg.call(yZoom.translate([xi(t),yi(t)]).scale(ysi(t)).event);
+		 	}
+  		});
+
+	}
+
+	function reset() {
+		cmpMassIntensity();
+	  	group_top.selectAll(".MyText")
+	  	.attr("x", function(d,i){
+	  		var tmpx = (xScale(d) + dragx) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+	  	})
+	  	.attr("y", function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale(notesintensity[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+	  	});
+		var updatePeak = group_top.selectAll(".MyPeak").data(peakmassShow);
+	  	updatePeak	
+		.attr("x1",function(d,i){
+	  		var tmpx = (xScale(d) + dragx) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+		} )	
+		.attr("y1",function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale(peakintensityShow[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+		} )
+		.attr("x2",function(d,i){
+	  		var tmpx = (xScale(d) + dragx) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+		});
+		updatePeak
+		.enter()
+		.append("line")
+		.attr("class","MyPeak")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x1",function(d,i){
+	  		var tmpx = (xScale(d) + dragx) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+		} )	
+		.attr("y1",function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale(peakintensityShow[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight * ys;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+		} )
+		.attr("x2",function(d,i){
+	  		var tmpx = (xScale(d) + dragx) * xs + x;
+	  		if (tmpx > 0 && tmpx < xRange){
+	  			return tmpx;
+	  		}else{
+	  			return -1000;
+	  		}
+		})
+		.attr("y2",height - padding.bottom - padding.top)
+		.attr("stroke",function(d,i){
+			if(notesmass.indexOf(d) != -1){
+				return "steelblue";
+			}else{
+				return "black";
+			}
+		})
+		.attr("stroke-width","2")
+		.on("mouseover",function(d,i){
+			over(this,d,i);
+		})
+		.on("mouseout",function(d,i){
+			out(this,d);
+		});
+	  	updatePeak.exit().remove();
+		// var dragd = xDomain*x/(xRange*s);
+		dragd_zoom = xDomain*x/(xRange*xs);
+		//x轴的比例尺
+		var xScale_new = d3.scale.linear()
+			.domain([0 - dragd_zoom - dragd_drag,xDomain/xs - dragd_zoom - dragd_drag])
+			.range([0, xRange]);
+		//定义x轴
+		var xAxis_new = d3.svg.axis()
+			.scale(xScale_new)
+			.orient("bottom")
+        	.ticks(10);
+		group_bottom.select("#xAxis")
+			.call(xAxis_new); 
+		//y轴的比例尺
+		var yScale_new = d3.scale.linear()
+			.domain([0,d3.max(peakintensity)/ys])
+			.range([height - padding.top - padding.bottom, 0]);
+		
+		//定义y轴
+		var yAxis_new = d3.svg.axis()
+			.scale(yScale_new)
+			.orient("left")
+    		.tickFormat(function(d) { return Math.round(d * 100 / d3.max(peakintensity)) + "%"; })
+        	.ticks(10);
+		group_top.select("#yAxis")
+			.call(yAxis_new); 
+
+	};
+
+	function dragstarted() {
+	  d3.event.sourceEvent.stopPropagation();
+	  d3.select(this).classed("dragging", true);
+		// console.log(d3.event);
+		svg.attr("cursor","move");
+	}
+
+	function dragged() {
+		dragx += d3.event.dx/xs;
+		dragd_drag = xDomain*dragx/xRange;
+		reset()
+	}
+
+	function dragended() {
+	  d3.select(this).classed("dragging", false);
+		// console.log(d3.event);
+		svg.attr("cursor","default");
+	}
+</script>  
+
+<script>
+	var nowScan2 = -1;
+	var scanList2 = [];
+	var scanIndex2 = [];
+	var peakData2 = [];
+	var annotationData2 = [];
+	var scanSelect2 = document.getElementById("Select2");
+	scanSelect2.onchange = scanChanged2;
+
+	function scanChanged2(){
+
+		svg2.call(xZoom2.translate([0,0]).scale(1).event);
+		svg2.call(yZoom2.translate([0,0]).scale(1).event);
+		dragx2 = 0;
+
+		var currSelectValue = Number(scanSelect2.value);
+		nowScan2 = currSelectValue;
+		group_top2.selectAll(".MyPeak").remove()
+		group_top2.selectAll(".MyText").remove()
+		group_bottom2.selectAll("g").remove()
+		group_top2.selectAll("g").remove()
+		scanPost2(scanSelect2.selectedIndex);
+		if(!isLoading) {
+			isLoading = true;
+			var MS1ScanIndex = getMS1Scan(scanIndex2[scanSelect2.selectedIndex]);
+			if (scanSelect.selectedIndex != MS1ScanIndex) {
+				scanSelect.selectedIndex = MS1ScanIndex;
+				scanChanged();
+			}
+			isLoading = false;
+			// console.log("MS1ScanIndex:"+MS1ScanIndex);
+		}
+	}
+	function getMS1Scan(MS2ScanIndex) {
+		// console.log("scanIndex.length:"+scanIndex.length);
+		for (var i = 0; i < scanIndex.length; i++) {
+			// console.log("<MS2ScanIndex,scanIndex[i]>:<"+MS2ScanIndex+","+scanIndex[i]+">");
+			if (MS2ScanIndex < scanIndex[i]) {
+				return i-1;
+			}
+		}
+		return scanIndex.length - 1;
+	}
+
+	var x2 = 0;
+	var y2 = 0;
+	var xs2 = 1;
+	var ys2 = 1;
+
+	var xZoom2 = d3.behavior.zoom()
+		.translate([0, 0])
+		.scaleExtent([1, 100000000])
+		.scale(1)
+		.on("zoom", xZoomed2);
+	var yZoom2 = d3.behavior.zoom()
+		.translate([0, 0])
+		.scaleExtent([1, 100000000])
+		.scale(1)
+		.on("zoom", yZoomed2);
+
+	//开启拖动
+	var drag2 = d3.behavior.drag()
+	    .on("dragstart", dragstarted2)
+	    .on("drag", dragged2)
+	    .on("dragend", dragended2);
+	var dragx2 = 0;
+	var dragd_zoom2 = 0;
+	var dragd_drag2 = 0;
+
+	//在 body 里添加一个 SVG 画布	
+	var svg2 = container.select("#ms2svg")
+        .attr("preserveAspectRatio", "xMidYMin meet")
+        .attr("viewBox", "0 0 "+width+" "+height)
+		.attr("width", "100%")
+		.attr("height", "100%")
+        .on('dblclick.zoom', init)
+      	.call(drag2);
+    var group_top2 = svg2.append("g")
+        .call(yZoom2);
+    var tect_top2 = group_top2.append("rect")
+    	.attr("x","0")
+    	.attr("y","0")
+    	.attr("width",width)
+    	.attr("height",height - padding.bottom)
+    	.attr("style","fill:rgb(255,255,255);stroke-width:0;stroke:rgb(0,0,0);fill-opacity:0");
+    var group_bottom2 = svg2.append("g")
+        .call(xZoom2)
+        .on('mousedown', function(){
+			svg2.attr("cursor","move");
+        })
+        .on('mouseup', function(){
+			svg2.attr("cursor","default");
+        });
+    var tect_bottom2 = group_bottom2.append("rect")
+    	.attr("x","0")
+    	.attr("y",height - padding.bottom)
+    	.attr("width",width)
+    	.attr("height",padding.bottom)
+    	.attr("style","fill:rgb(255,255,255);stroke-width:0;stroke:rgb(0,0,0);fill-opacity:0");
+
+	var peakData2 = [];
+	var annotationData2 = [];
+	
+	var xDomain2;
+	var xRange2;
+	var xScale2;
+	var yScale2;
+	var xAxis2;
+	var yAxis2;
+
+
+	var peakmass2 = [];
+	var peakintensity2 = [];
+	var peakmassShow2 = [];
+	var peakintensityShow2 = [];
+	var maxPeakintensity2 = 0;
+	var maxPeaksCount2 = 1000;
+
+	function convertData2() {
+		var i = peakData2.length;
+		while(i--) {
+			peakmass2[i] = peakData2[i][0];
+			peakintensity2[i] = peakData2[i][1];
+		}
+		maxPeakintensity2 = d3.max(peakintensity2);
+		var i = peakintensity2.length;
+		while(i--) {
+			peakintensity2[i] = peakintensity2[i] / maxPeakintensity2
+		}
+
+		xDomain2 = d3.max(peakmass2) * 1.1 - d3.min(peakmass2) * 0.1
+		xRange2 = width - padding.left - padding.right
+		//x轴的比例尺
+		xScale2 = d3.scale.linear()
+			.domain([0,xDomain2])
+			.range([0, xRange2]);
+		//y轴的比例尺
+		yScale2 = d3.scale.linear()
+			.domain([0,d3.max(peakintensity2)])
+			.range([height - padding.top - padding.bottom, 0]);
+
+		//定义x轴
+		xAxis2 = d3.svg.axis()
+			.scale(xScale2)
+			.orient("bottom")
+	        .ticks(10);
+			
+		//定义y轴
+		yAxis2 = d3.svg.axis()
+			.scale(yScale2)
+			.orient("left")
+    		.tickFormat(function(d) { return Math.round(d * 100 / d3.max(peakintensity2)) + "%"; })
+        	.ticks(10);
+
+	}
+	convertData2();
+	cmpMassIntensity2();
+	function cmpMassIntensity2() {
+		peakmassShow2 = [];
+		peakintensityShow2 = [];
+		var peakCount = 0;
+		for(var i = 0; i < peakmass2.length; i++) {
+			var tmpx = (xScale2(peakmass2[i]) + dragx2) * xs2 + x2;
+			if (tmpx > 0 && tmpx < xRange2){
+				if(peakCount == 0) {
+					peakmassShow2[peakCount] = peakmass2[i];
+					peakintensityShow2[peakCount] = peakintensity2[i];
+					peakCount++;
+				} else {
+					if(xScale2(peakmass2[i])-xScale2(peakmassShow2[peakCount-1]) < xRange2/(maxPeaksCount2*xs2)) {
+						if(peakintensity2[i]>peakintensityShow2[peakCount-1]) {
+							peakmassShow2[peakCount-1] = peakmass2[i];
+							peakintensityShow2[peakCount-1] = peakintensity2[i];
+						}
+					} else {
+						peakmassShow2[peakCount] = peakmass2[i];
+						peakintensityShow2[peakCount] = peakintensity2[i];
+						peakCount++;
+					}
+				}
+			}
+		}	
+		console.log("peakCount:"+peakCount);
+	}
+
+
+	var peaks2 = group_top2.selectAll(".MyPeak")
+	//添加peaks元素
+	function addPeaks2() {
+		peaks2.data(peakmassShow2)
+		.enter()
+		.append("line")
+		.attr("class","MyPeak")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x1",function(d,i){
+			return xScale2(d);
+		} )
+		.attr("y1",function(d,i){
+			return yScale2(peakintensityShow2[i]);
+		})
+		.attr("x2",function(d,i){
+			return xScale2(d);
+		})
+		.attr("y2",height - padding.bottom - padding.top)		
+		.attr("stroke",function(d,i){
+			return "black";
+		})
+		.attr("stroke-width","2")
+		.on("mouseover",function(d,i){
+			over2(this,d,i);
+		})
+		.on("mouseout",function(d,i){
+			out2(this,d);
+		});
+	}
+	var textMZ2;
+	var textIN2;
+	function over2(t,d,i){
+			console.log("d:"+d);
+			console.log("i:"+i);
+			console.log("x:"+xScale2(d));
+			console.log("y:"+(yScale2(peakintensityShow2[i])-10));
+			var tmpData = [[d,yScale2(peakintensityShow2[i])]];
+			d3.select(t).attr("stroke","red")
+				.attr("stroke-width","3");
+			textMZ2 = group_top2.selectAll(".MyTextMZ")
+				.data(tmpData)
+				.enter()
+				.append("text")
+				.attr("class","MyTextMZ")
+				.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+				.attr("x", function(d) {
+					var tmpx = (xScale2(d[0]) + dragx2) * xs2 + x2;
+			  		if (tmpx > 0 && tmpx < xRange2){
+			  			return tmpx;
+			  		}else{
+			  			return -1000;
+			  		}
+				})
+				.attr("y", function(d) {
+					var yHight = height - padding.bottom - padding.top - d[1];
+			  		var tmpy = height - padding.bottom - padding.top - yHight * ys2;
+			  		if (tmpy > height - padding.bottom){
+			  			return height - padding.bottom - 20;
+			  		}else if (tmpy < 0){
+			  			return 0 - 20;
+			  		}else {
+			  			return tmpy - 20;
+			  		}
+				})
+				.text(function(d){
+					return "M:"+d[0];
+				});
+			textIN2 = group_top2.selectAll(".MyTextIN")
+				.data(tmpData)
+				.enter()
+				.append("text")
+				.attr("class","MyTextMZ")
+				.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+				.attr("x", function(d) {
+					var tmpx = (xScale2(d[0]) + dragx2) * xs2 + x2;
+			  		if (tmpx > 0 && tmpx < xRange2){
+			  			return tmpx;
+			  		}else{
+			  			return -1000;
+			  		}
+				})
+				.attr("y", function(d) {
+					var yHight = height - padding.bottom - padding.top - d[1];
+			  		var tmpy = height - padding.bottom - padding.top - yHight * ys2;
+			  		if (tmpy > height - padding.bottom){
+			  			return height - padding.bottom - 10;
+			  		}else if (tmpy < 0){
+			  			return 0 - 10;
+			  		}else {
+			  			return tmpy - 10;
+			  		}
+				})
+				.text(function(d){
+					return "I:"+peakintensityShow2[i]*100+"%";
+				});
+	};
+	function out2(t,d){
+		d3.select(t)
+			.transition()
+	        .duration(500)
+			.attr("stroke",function(d){
+				return "black";
+			})
+			.attr("stroke-width","2");
+
+		textMZ2.remove();
+		textIN2.remove();
+	};
+
+
+	function addAxis2() {
+		//添加x轴
+		group_bottom2.append("g")
+			.attr("id","xAxis")
+			.attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + (height - padding.bottom) + ")")
+			.call(xAxis2); 
+			
+		//添加y轴
+		group_top2.append("g")
+			.attr("id","yAxis")
+			.attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+			.call(yAxis2);
+	}
+	// addAxis();
+
+
+	function xZoomed2() {
+		xs2=d3.event.scale;
+		x2=d3.event.translate[0] + padding.left * (xs2 - 1);
+		reset2();
+	};
+	function yZoomed2() {
+		ys2=d3.event.scale;
+		reset2();
+	};
+
+	function init2() {
+		d3.transition().duration(500).tween("zoom", function() {
+		    var xsi = d3.interpolate(xs, 1);
+		    var ysi = d3.interpolate(ys, 1);
+		    var xi = d3.interpolate(x - padding.left * (xs - 1), 0);
+		    var yi = d3.interpolate(y, 0);
+		    var dragxi = d3.interpolate(dragx, 0);
+		    return function(t){
+		      dragx2 = dragxi(t);
+			  dragd_drag2 = xDomain*dragx/xRange;
+		      svg2.call(xZoom2.translate([xi(t),yi(t)]).scale(xsi(t)).event);
+		      svg2.call(yZoom2.translate([xi(t),yi(t)]).scale(ysi(t)).event);
+		 	}
+  		});
+
+	}
+
+	function reset2() {
+		cmpMassIntensity2();
+	  	group_top2.selectAll(".MyText")
+	  	.attr("x", function(d,i){
+	  		var tmpx = (xScale2(d) + dragx2) * xs2 + x2;
+	  		return tmpx;
+	  	})
+	  	.attr("y", function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale2(notesintensity2[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight2 * ys2;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+	  	});
+		var updatePeak = group_top2.selectAll(".MyPeak").data(peakmassShow2);
+	  	updatePeak	
+		.attr("x1",function(d,i){
+	  		var tmpx = (xScale2(d) + dragx2) * xs2 + x2;
+	  		return tmpx;
+		} )	
+		.attr("y1",function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale2(peakintensityShow2[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight * ys2;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+		} )
+		.attr("x2",function(d,i){
+	  		var tmpx = (xScale2(d) + dragx2) * xs2 + x2;
+	  		return tmpx;
+		});
+		updatePeak
+		.enter()
+		.append("line")
+		.attr("class","MyPeak")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x1",function(d,i){
+	  		var tmpx = (xScale2(d) + dragx2) * xs2 + x2;
+	  		return tmpx;
+		} )	
+		.attr("y1",function(d,i){
+			var yHight = height - padding.bottom - padding.top - yScale2(peakintensityShow2[i]);
+	  		var tmpy = height - padding.bottom - padding.top - yHight * ys2;
+	  		if (tmpy > height - padding.bottom){
+	  			return height - padding.bottom;
+	  		}else if (tmpy < 0){
+	  			return 0;
+	  		}else {
+	  			return tmpy;
+	  		}
+		} )
+		.attr("x2",function(d,i){
+	  		var tmpx = (xScale2(d) + dragx2) * xs2 + x2;
+	  		return tmpx;
+		})
+		.attr("y2",height - padding.bottom - padding.top)
+		.attr("stroke",function(d,i){
+			return "black";
+		})
+		.attr("stroke-width","2")
+		.on("mouseover",function(d,i){
+			over2(this,d,i);
+		})
+		.on("mouseout",function(d,i){
+			out2(this,d);
+		});
+	  	updatePeak.exit().remove();
+		// var dragd = xDomain*x/(xRange*s);
+		dragd_zoom2 = xDomain2*x2/(xRange2*xs2);
+		//x轴的比例尺
+		var xScale_new2 = d3.scale.linear()
+			.domain([0 - dragd_zoom2 - dragd_drag2,xDomain2/xs2 - dragd_zoom2 - dragd_drag2])
+			.range([0, xRange2]);
+		//定义x轴
+		var xAxis_new2 = d3.svg.axis()
+			.scale(xScale_new2)
+			.orient("bottom")
+        	.ticks(10);
+		group_bottom2.select("#xAxis")
+			.call(xAxis_new2); 
+		//y轴的比例尺
+		var yScale_new2 = d3.scale.linear()
+			.domain([0,d3.max(peakintensity2)/ys2])
+			.range([height - padding.top - padding.bottom, 0]);
+		
+		//定义y轴
+		var yAxis_new2 = d3.svg.axis()
+			.scale(yScale_new2)
+			.orient("left")
+    		.tickFormat(function(d) { return Math.round(d * 100 / d3.max(peakintensity2)) + "%"; })
+        	.ticks(10);
+		group_top2.select("#yAxis")
+			.call(yAxis_new2); 
+
+	};
+
+	function dragstarted2() {
+	  d3.event.sourceEvent.stopPropagation();
+	  d3.select(this).classed("dragging", true);
+		// console.log(d3.event);
+		svg2.attr("cursor","move");
+	}
+
+	function dragged2() {
+		dragx2 += d3.event.dx/xs2;
+		dragd_drag2 = xDomain2*dragx2/xRange2;
+		reset2()
+	}
+
+	function dragended2() {
+	  d3.select(this).classed("dragging", false);
+		// console.log(d3.event);
+		svg2.attr("cursor","default");
+	}
+</script>  
+
+</body>  
+</html>  

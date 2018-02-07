@@ -42,8 +42,8 @@ var server = app.listen(8081, function () {
   var host = server.address().address
   var port = server.address().port
  
-  console.log("应用实例，访问地址为 http://%s:%s", host, port)
-  console.log('Server running at http://127.0.0.1:%s/',port);//express_demo.js 文件
+  // console.log("应用实例，访问地址为 http://%s:%s", host, port)
+  console.log('Server running at http://127.0.0.1:%s/index.html',port);//express_demo.js 文件
  
 })
 
