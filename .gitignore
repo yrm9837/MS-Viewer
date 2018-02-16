@@ -1,0 +1,3 @@
+data/*
+src/node_modules/*
+scr/package-lock.json
