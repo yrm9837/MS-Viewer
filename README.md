@@ -14,6 +14,10 @@ cd ..
 mkdir data
 cp testcases/rawdata/CPTAC_Intact_rep3_15Jan15_Bane_C2-14-08-02RZ_7000-7300.mzML data/CPTAC_Intact_rep3_15Jan15_Bane_C2-14-08-02RZ_7000-7300.mzML
 
+# set up server port
+sudo iptables -I INPUT -p tcp --dport 8081 -j ACCEPT
+sudo service network-manager restart
+
 # run server
 cd src
 node server.js
