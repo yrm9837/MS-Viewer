@@ -22,4 +22,4 @@ sudo service network-manager restart
 cd src
 node server.js
 ```
-Then open link http://127.0.0.1:8081/index.html
+Then open link http://127.0.0.1:8081/2Dindex.html to use the MS1/MS2 viewer or open link http://127.0.0.1:8081/3Dindex.html to use the LC-MS 3 dimenaionl viewer.
