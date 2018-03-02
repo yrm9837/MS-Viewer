@@ -10,16 +10,13 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 // app.use(express.static('public'));
 app.use(express.static(__dirname));
  
-app.get('/2Dindex.html', function (req, res) {
-   res.sendFile( __dirname + "/2D/" + "index.html" );
-});
-app.get('/3Dindex.html', function (req, res) {
-   res.sendFile( __dirname + "/3D/" + "index.html" );
+app.get('/index.html', function (req, res) {
+   res.sendFile( __dirname + "/" + "index.html" );
 });
  
-app.post('/file_path_post1', urlencodedParser, function (req, res) {
-  filePath = "../data/" + req.body.filePath
-  var cmd = "../exe/msReader " + filePath + " -s 1";
+app.post('/file_path_post', urlencodedParser, function (req, res) {
+  filePath = "./" + req.body.filePath
+  var cmd = "./msReader " + filePath + " -s 1";
   exec(cmd,function(error, stdout,stderr) {
     // get the output
     // console.log('Success execute the demo file.\n'+stdout);
@@ -30,7 +27,7 @@ app.post('/file_path_post1', urlencodedParser, function (req, res) {
   })
 });
 app.post('/scan_post', urlencodedParser, function (req, res) {
-  var cmd = "../exe/msReader ./" + filePath + " " + req.body.nowScanIndex;
+  var cmd = "./msReader ./" + filePath + " " + req.body.nowScanIndex;
   exec(cmd,function(error, stdout,stderr) {
     // get the output
     // console.log('Success execute the demo file.\n'+stdout);
@@ -41,8 +38,8 @@ app.post('/scan_post', urlencodedParser, function (req, res) {
   })
 });
 app.post('/file_path_post2', urlencodedParser, function (req, res) {
-  filePath = "../data/" + req.body.filePath
-  var cmd = "../exe/msReader " + filePath + " -s 2";
+  filePath = "./" + req.body.filePath
+  var cmd = "./msReader " + filePath + " -s 2";
   exec(cmd,function(error, stdout,stderr) {
     // get the output
     // console.log('Success execute the demo file.\n'+stdout);
@@ -57,8 +54,8 @@ app.post('/file_path_post2', urlencodedParser, function (req, res) {
 // });
 app.get('/filestatus', function (req, res) {
    // 输出 JSON 格式
-  filePath = "../data/" + req.query.filename
-  var cmd = "../exe/msReader " + filePath + " -f";
+  filePath = "./" + req.query.filename
+  var cmd = "./msReader " + filePath + " -f";
 
   exec(cmd,function(error, stdout,stderr) {
    var re = stdout.split("\t");
@@ -79,7 +76,7 @@ app.get('/filestatus', function (req, res) {
 app.get('/getpoints', function (req, res) {
    // 输出 JSON 格式
   // console.log(req);
-  var cmd = "../exe/msReader " + filePath + " -p " + req.query.mzmin + " " + req.query.mzmax + " " 
+  var cmd = "./msReader " + filePath + " -p " + req.query.mzmin + " " + req.query.mzmax + " " 
     + req.query.rtmin + " " + req.query.rtmax + " " + req.query.numpoints + " " + req.query.intmin;
   console.log(cmd);
   exec(cmd,function(error, stdout,stderr) {
@@ -105,7 +102,7 @@ var server = app.listen(8081, function () {
   var port = server.address().port
  
   // console.log("应用实例，访问地址为 http://%s:%s", host, port)
-  console.log('Server running at \nhttp://127.0.0.1:%s/2Dindex.html or \nhttp://127.0.0.1:%s/3Dindex.html',port,port);//express_demo.js 文件
+  console.log('Server running at http://127.0.0.1:%s/index.html',port);//express_demo.js 文件
  
 });
 
