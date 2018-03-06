@@ -121,7 +121,7 @@ app.post('/filelist', urlencodedParser, function (req, res) {
       }) 
       return output 
   }   
-  console.log("ouptut: "+output)  
+  // console.log("ouptut: "+output)  
   res.write(output);
   // console.log(output);
   res.end();

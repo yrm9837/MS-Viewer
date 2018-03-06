@@ -6,6 +6,8 @@ function DataBridge() {
     this.fileName = "";
     this.isLoading = false;
     var self = this;
+    // this.ADDRESS = "http://127.0.0.1:8081"
+    this.ADDRESS = "http://149.166.112.123:8081"
 
 	var isLoading = false;
 	this.openFile = function() {
@@ -15,7 +17,7 @@ function DataBridge() {
     this.filePathPost = function(spectrum){
     	var dataControls = spectrum.dataControls;
         var xhr=new XMLHttpRequest();
-        xhr.open("POST","http://127.0.0.1:8081/file_path_post" + spectrum.level,true);
+        xhr.open("POST",self.ADDRESS + "/file_path_post" + spectrum.level,true);
         xhr.onreadystatechange=function(){
             if(xhr.readyState==4){
                 if(xhr.status==200){
@@ -44,7 +46,7 @@ function DataBridge() {
     this.scanPost = function(nowScanIndex,spectrum){
     	var dataControls = spectrum.dataControls;
         var xhr=new XMLHttpRequest();
-        xhr.open("POST","http://127.0.0.1:8081/scan_post",true);
+        xhr.open("POST",self.ADDRESS + "/scan_post",true);
         xhr.onreadystatechange=function(){
             if(xhr.readyState==4){
                 if(xhr.status==200){
@@ -73,7 +75,7 @@ function DataBridge() {
         // console.log("this.fileListPost");
         var dataControls = this.spectrum1.dataControls;
         var xhr=new XMLHttpRequest();
-        xhr.open("POST","http://127.0.0.1:8081/filelist",true);
+        xhr.open("POST",self.ADDRESS + "/filelist",true);
         xhr.onreadystatechange=function(){
             // console.log("xhr.readyState",xhr.readyState);
             // console.log("xhr.status",xhr.status);
@@ -98,7 +100,7 @@ function DataBridge() {
         // filePathPost2();
     }
     this.init = function() {
-        // console.log("init");
+        console.log("init");
         this.fileListPost();
     }
 }
