@@ -4,7 +4,7 @@ function Spectrum(containerEl,dataBridge,level) {
 	self = this;
 	this.level = level;
 	this.containerEl = containerEl;
-	this.scanSelect = document.getElementById("Select" + level);
+    this.scanSelect = document.getElementById("Select" + level);
 	this.dataBridge = dataBridge;
 	this.dataControls = new DataControls(this);
     //mzML file name

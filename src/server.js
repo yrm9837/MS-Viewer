@@ -1,3 +1,5 @@
+var fs = require("fs")  
+var path = require("path")  
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -96,6 +98,33 @@ app.get('/getpoints', function (req, res) {
    res.end(JSON.stringify(response));
    console.log('Success call openfile.');
   })
+});
+app.post('/filelist', urlencodedParser, function (req, res) {
+  var root = path.join(__dirname) + "/../data/"
+  console.log("root: "+root)  
+  var output = readDirSync(root) 
+  function readDirSync(path){ 
+      var output = "" 
+      var pa = fs.readdirSync(path);  
+      pa.forEach(function(ele,index){  
+          var info = fs.statSync(path+"/"+ele)      
+          if(info.isDirectory()){  
+              console.log("dir: "+ele)  
+              readDirSync(path+"/"+ele);  
+          }else{  
+              console.log("file: "+ele)   
+              console.log(ele.slice(-4))  
+              if (ele.slice(-4) == "mzML") {
+                  output = output + "\t" + ele
+              }
+          }     
+      }) 
+      return output 
+  }   
+  console.log("ouptut: "+output)  
+  res.write(output);
+  // console.log(output);
+  res.end();
 });
 
  

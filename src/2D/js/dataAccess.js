@@ -2,6 +2,7 @@ function DataBridge() {
 	this.spectrum1 = new Spectrum("#ms1svg",this,1);
 	this.spectrum2 = new Spectrum("#ms2svg",this,2);
 	this.Toolbar = new Toolbar("body", this);
+    this.fileSelect = document.getElementById("file_select");
     this.fileName = "";
     this.isLoading = false;
     var self = this;
@@ -67,5 +68,37 @@ function DataBridge() {
         console.log("nowScan="+dataControls.nowScan);
         console.log("nowScanIndex="+nowScanIndex);
         xhr.send("nowScanIndex="+nowScanIndex);
+    }
+    this.fileListPost = function(){
+        // console.log("this.fileListPost");
+        var dataControls = this.spectrum1.dataControls;
+        var xhr=new XMLHttpRequest();
+        xhr.open("POST","http://127.0.0.1:8081/filelist",true);
+        xhr.onreadystatechange=function(){
+            // console.log("xhr.readyState",xhr.readyState);
+            // console.log("xhr.status",xhr.status);
+            if(xhr.readyState==4){
+                if(xhr.status==200){
+                    console.log(xhr.responseText);
+                    var fileNum = 0;
+                    var allFlies = xhr.responseText.split("\t");
+                    dataControls.addScan(self.fileSelect,"Select a mzML file.");
+                    for (var i = 0; i < allFlies.length; i++) {
+                        if (allFlies[i].length > 1) {
+                            var singlefile = allFlies[i];
+                            dataControls.addScan(self.fileSelect,singlefile);
+                            fileNum++;
+                        }
+                    }
+                }
+            }
+        }
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xhr.send();
+        // filePathPost2();
+    }
+    this.init = function() {
+        // console.log("init");
+        this.fileListPost();
     }
 }

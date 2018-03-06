@@ -26,6 +26,16 @@ function Toolbar(containerEl,dataBridge) {
 			dataBridge.spectrum2.dataControls.scanChanged()
 		}
 	});
+	// file list changed
+	this.containerEl.find("#file_select").change(function() {
+		if (self.dataBridge.fileSelect.selectedIndex != 0) {
+		    var filename = self.dataBridge.fileSelect.value;
+		    if (filename != null || filename != undefined || filename != ""){
+			    console.log("open file: " + filename);
+			    self.dataBridge.fileName = filename;
+			    self.dataBridge.openFile();
+		    }
+		}
+	});
 
-	// });
 }
