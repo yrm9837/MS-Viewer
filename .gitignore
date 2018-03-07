@@ -1,4 +1,5 @@
-data/*
+*.mzML
+!CPTAC_Intact_rep3_15Jan15_Bane_C2-14-08-02RZ_7000-7300.mzML
 src/node_modules/*
 scr/package-lock.json
 *.DS_Store

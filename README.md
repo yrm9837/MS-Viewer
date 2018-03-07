@@ -8,6 +8,8 @@ cd src
 sudo apt-get install nodejs
 sudo apt-get install npm
 sudo npm install express
+sudo npm install multer
+sudo npm install chalk
 
 # copy data
 cd ..
