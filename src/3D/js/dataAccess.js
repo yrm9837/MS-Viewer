@@ -1,7 +1,11 @@
 // dataAccess.js: communication with server-side API
 function DataBridge(graph) {
     this.graph = graph;
-    
+    // this.fileSelect = this.graph.containerEl.find(".file_select");
+    // console.log(this.fileSelect);
+    this.fileSelect = document.getElementById("file_select");
+    // addScan(this.fileSelect,"Select a mzML file."); 
+
     this.openCancelId = undefined;
     this.queueCancelIds = [];
     this.QUEUE_PLOT_DELAY = 200; // delay between drawing more points
@@ -10,7 +14,8 @@ function DataBridge(graph) {
 }
 
 var API_UTIL = {
-    API_ROOT: "http://127.0.0.1:8081",
+    // API_ROOT: "http://127.0.0.1:8081",
+    API_ROOT: "",
     HTTP_200_OK: 200,
     HTTP_204_NO_CONTENT: 204,
     HTTP_400_BAD_REQUEST: 400,
@@ -257,3 +262,56 @@ DataBridge.prototype.setPointsServer = function(data, onSuccess, onFail) {
 DataBridge.prototype.updateCommStatus = function(status) {
     this.graph.containerEl.find(".commStatus").text(status);
 };
+
+DataBridge.prototype.fileListPost = function(){
+    var self = this
+    // console.log("this.fileListPost");
+    var xhr=new XMLHttpRequest();
+    xhr.open("POST", API_UTIL.API_ROOT + "/filelist",true);
+    xhr.onreadystatechange=function(){
+        // console.log("xhr.readyState",xhr.readyState);
+        // console.log("xhr.status",xhr.status);
+        if(xhr.readyState==4){
+            if(xhr.status==200){
+                console.log(xhr.responseText);
+                var fileNum = 0;
+                var allFlies = xhr.responseText.split("\t");
+                addScan(self.fileSelect,"Select a mzML file.");
+                for (var i = 0; i < allFlies.length; i++) {
+                    if (allFlies[i].length > 1) {
+                        var singlefile = allFlies[i];
+                        addScan(self.fileSelect,singlefile);
+                        fileNum++;
+                    }
+                }
+            }
+        }
+    }
+    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    xhr.send();
+    // filePathPost2();
+}
+
+// 1.判断select选项中 是否存在Value="paraValue"的Item 
+function jsSelectIsExitItem(objSelect, objItemValue) { 
+    var isExit = false; 
+    for (var i = 0; i < objSelect.options.length; i++) { 
+        if (objSelect.options[i].value == objItemValue) { 
+            isExit = true; 
+            break; 
+        } 
+    } 
+    return isExit; 
+} 
+// 2.向select选项中 加入一个Item 
+function addScan(objSelect,scan){
+
+    //判断是否存在 
+    if (jsSelectIsExitItem(objSelect, scan)) { 
+        // console.log("该Item的Value值已经存在"+scan); 
+    } else { 
+        var varItem = new Option(scan, scan); 
+        objSelect.options.add(varItem); 
+        // console.log("成功加入"); 
+    } 
+}

@@ -6,8 +6,7 @@ function DataBridge() {
     this.fileName = "";
     this.isLoading = false;
     var self = this;
-    // this.ADDRESS = "http://127.0.0.1:8081"
-    this.ADDRESS = "http://149.166.112.123:8081"
+    this.ADDRESS = ""
 
 	var isLoading = false;
 	this.openFile = function() {

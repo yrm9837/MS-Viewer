@@ -47,7 +47,7 @@ Toolbar.prototype.saveSettings = function() {
 
 // sets the hover texts and popout positions that do not change during the program's run
 Toolbar.prototype.setupHoverTexts = function() {
-    this.containerEl.find(".open-tooltip").attr("data-tooltip", "Open (o)");
+    this.containerEl.find(".open-tooltip").attr("data-tooltip", "Upload files (u)");
     this.containerEl.find(".save_as-tooltip").attr("data-tooltip", "Save As");
     
     this.containerEl.find(".refresh-tooltip").attr("data-tooltip", "Refresh (r)");
@@ -109,6 +109,7 @@ Toolbar.prototype.checkHidePopout = function(name) {
 // sets up the toolbar buttons for real
 Toolbar.prototype.connect = function() {
     
+var slef = this;
 this.setupHoverTexts();
 this.updateIconStates();
 
@@ -155,8 +156,8 @@ this.containerEl.find(".instruction").click(function() {
 
 // open file button
 this.containerEl.find(".open").click(function() {
-    console.log(".open");
-    $(".fileload").click();
+    console.log(".file_upload");
+    $("#file_upload").click();
 });
 this.containerEl.find(".fileload").change(function() {
     var filename = graph.containerEl.find(".fileload").val();
@@ -166,6 +167,17 @@ this.containerEl.find(".fileload").change(function() {
     graph.dataBridge.openFile();
 });
 
+// file list changed
+this.containerEl.find("#file_select").change(function() {
+    if (graph.dataBridge.fileSelect.selectedIndex != 0) {
+        var filename = graph.dataBridge.fileSelect.value;
+        if (filename != null || filename != undefined || filename != ""){
+            console.log("open file: " + filename);
+            graph.FILE_NAME = filename;
+            graph.dataBridge.openFile();
+        }
+    }
+});
 // save popout "Save" button
 this.containerEl.find(".saveSubmit").click(function(){
     var filename = graph.containerEl.find(".filename").val();
@@ -234,4 +246,5 @@ this.containerEl.find(".detailRange").on("input", function() {
     detailField.text(String(this.value));
     graph.POINTS_PLOTTED_LIMIT = graph.POINTS_VISIBLE_LIMIT = this.value;
 });
+
 };

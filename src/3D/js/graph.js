@@ -117,6 +117,9 @@ MsGraph.prototype.init = function(){
     
     // add server communication module
     this.dataBridge = new DataBridge(this);
+
+
+    this.dataBridge.fileListPost();
     
     // add rest of UI
     this.legend = new Legend(this.legendEl);

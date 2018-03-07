@@ -4,13 +4,31 @@
     <meta charset="UTF-8">
     <title>msViz Graph</title>
     <link rel="stylesheet" href="3D/css/graphview.css">
+    <link rel="stylesheet" type="text/css" href="3D/css/progress.css">
 </head>
 
 <body>
 
+    <fieldset id="toolbar">
+        <legend>Read files：</legend>
+        <select id="file_select"></select>
+        <!-- <input type="file" id="file" name="file" size="50" /> -->
+<!--        <input type="hidden" id="rawFilePath" name="rawFilePath">
+        <input type="submit" value="Submit" onclick="filePathPost()"> -->
+        <input id="file_upload" type="file" multiple>
+        <div class="progress">
+          <span></span>
+        </div>
+    </fieldset>
     <div class="container-fluid content">
-        <input type="file" id="fileload" name="fileload" class="fileload" size="50" />
+<!--         <input type="file" id="fileload" name="fileload" class="fileload" size="50" />
         <input type="text" id="rawFilePath" name="rawFilePath" class="rawFilePath">
+        <select id="file_select"></select>
+        <input id="file_upload" type="file" multiple>
+        <div class="progress">
+          <span></span>
+        </div> -->
+        
         <div class="col-md-1 col1">
             <!-- Save/load buttons-->
             <ul>
@@ -69,13 +87,14 @@
     </div>
 
     <!-- Accessibility Buttons -->
-    <div class="accessibility">
+<!--     <div class="accessibility">
         <a href="instruction.html" target="_blank" title="Help"><img class="center-block help" src="3D/images/buttons/help.svg" alt="Help"/></a>
         <a href="#" title="Colorblind Mode"><img class="center-block colorblind" src="3D/images/buttons/colorblind.svg" alt="Colorblind Mode"/></a>
         <a href="#" title="Toggle Tooltips"><img class="center-block hover" src="3D/images/buttons/hover.svg" alt="Toggle Tooltips"/></a>
-    </div>
+    </div> -->
 
     <!-- thirdparty js -->
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>   
     <script src="3D/js/libs/three.min.js"></script>
     <script src="3D/js/libs/OrbitControls.js"></script>
     <script src="3D/js/libs/jquery-3.1.0.min.js"></script>
@@ -90,5 +109,6 @@
     <script src="3D/js/segmentui.js"></script>
     <script src="3D/js/segmentColors.js"></script> -->
     <script src="3D/js/buttons.js"></script>
+    <script src="2D/js/files.js"></script>  
 </body>
 </html>

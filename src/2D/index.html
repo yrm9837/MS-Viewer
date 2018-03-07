@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
 	<title>A simple spectrum</title>  
     <link rel="stylesheet" type="text/css" href="2D/css/spectrumview.css">
+    <link rel="stylesheet" type="text/css" href="2D/css/progress.css">
+
 </head> 
 
 
@@ -15,6 +17,10 @@
 		<!-- <input type="file" id="file" name="file" size="50" /> -->
 <!-- 		<input type="hidden" id="rawFilePath" name="rawFilePath">
 		<input type="submit" value="Submit" onclick="filePathPost()"> -->
+	    <input id="file_upload" type="file" multiple>
+	    <div class="progress">
+	      <span></span>
+	    </div>
     </fieldset>
 	<div class="container" id="container">
 	    <label>MS1 Scan=</label>
@@ -39,6 +45,7 @@
     <script src="2D/js/spectrumPoints.js"></script>
 <!--     <script src="2D/js/dataControls2.js"></script>   -->
     <script src="2D/js/sp2d.js"></script>  
+    <script src="2D/js/files.js"></script>  
 
 
 </body>  

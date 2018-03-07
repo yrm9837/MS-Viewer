@@ -15,7 +15,7 @@ DataControls = function(graph) {
     // keys list available on MDN
     this.keys = {
         LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40,
-        OPEN: 79, THREED: 68, REFRESH: 82, VIEWALL: 65,
+        OPEN: 85, THREED: 68, REFRESH: 82, VIEWALL: 65,
         JUMP: 74
     };
 
