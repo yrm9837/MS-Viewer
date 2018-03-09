@@ -315,3 +315,18 @@ function addScan(objSelect,scan){
         // console.log("成功加入"); 
     } 
 }
+DataBridge.prototype.toDelete = function(){
+    var xhr=new XMLHttpRequest();
+    xhr.open("GET",API_UTIL.API_ROOT + "/delete.html",true);
+    xhr.onreadystatechange=function(){
+        if(xhr.readyState==4){
+            if(xhr.status==200){
+                console.log("To delete");
+                document.write(xhr.responseText);
+                fileListPost();
+            }
+        }
+    }
+    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    xhr.send(null);
+}

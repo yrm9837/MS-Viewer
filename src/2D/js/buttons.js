@@ -37,5 +37,9 @@ function Toolbar(containerEl,dataBridge) {
 		    }
 		}
 	});
+	// delete files
+	this.containerEl.find("#delete").click(function() {
+	   self.dataBridge.toDelete();
+	});
 
 }

@@ -246,5 +246,9 @@ this.containerEl.find(".detailRange").on("input", function() {
     detailField.text(String(this.value));
     graph.POINTS_PLOTTED_LIMIT = graph.POINTS_VISIBLE_LIMIT = this.value;
 });
+// delete files
+this.containerEl.find("#delete").click(function() {
+    graph.dataBridge.toDelete();
+});
 
 };

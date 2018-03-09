@@ -24,6 +24,9 @@ app.get('/2Dindex.html', function (req, res) {
 app.get('/3Dindex.html', function (req, res) {
    res.sendFile( __dirname + "/3D/" + "index.html" );
 });
+app.get('/delete.html', function (req, res) {
+   res.sendFile( __dirname + "/" + "delete.html" );
+});
  
 app.post('/file_path_post1', urlencodedParser, function (req, res) {
   filePath = "../data/" + req.body.filePath
@@ -130,6 +133,16 @@ app.post('/filelist', urlencodedParser, function (req, res) {
   // console.log("ouptut: "+output)  
   res.write(output);
   // console.log(output);
+  res.end();
+});
+app.post('/delfeile', urlencodedParser, function (req, res) {
+  var root = path.join(__dirname) + "/../data/" + req.body.filePath
+  fs.unlink(root, function(err) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log("success delete file:" + root);
+  });
   res.end();
 });
 

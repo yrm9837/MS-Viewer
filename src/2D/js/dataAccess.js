@@ -98,6 +98,21 @@ function DataBridge() {
         xhr.send();
         // filePathPost2();
     }
+    this.toDelete = function(){
+        var xhr=new XMLHttpRequest();
+        xhr.open("GET",self.ADDRESS + "/delete.html",true);
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if(xhr.status==200){
+                    console.log("To delete");
+                    document.write(xhr.responseText);
+                    fileListPost();
+                }
+            }
+        }
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xhr.send(null);
+    }
     this.init = function() {
         console.log("init");
         this.fileListPost();
