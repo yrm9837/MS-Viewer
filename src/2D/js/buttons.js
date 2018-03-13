@@ -41,5 +41,14 @@ function Toolbar(containerEl,dataBridge) {
 	this.containerEl.find("#delete").click(function() {
 	   self.dataBridge.toDelete();
 	});
+	// save as png
+	this.containerEl.find("#save1").click(function() {
+			    // console.log("Save");
+		dataBridge.spectrum1.dataControls.saveAsPng();
+	});
+	this.containerEl.find("#save2").click(function() {
+			    // console.log("Save");
+		dataBridge.spectrum2.dataControls.saveAsPng();
+	});
 
 }

@@ -3,8 +3,8 @@
 <head>  
     <meta charset="UTF-8">
 	<title>A simple spectrum</title>  
-    <link rel="stylesheet" type="text/css" href="2D/css/spectrumview.css">
     <link rel="stylesheet" type="text/css" href="2D/css/progress.css">
+    <link rel="stylesheet" type="text/css" href="2D/css/spectrumview.css">
 
 </head> 
 
@@ -26,13 +26,41 @@
 	<div class="container" id="container">
 	    <label>MS1 Scan=</label>
 	    <select id="Select1"></select>
+	    <input type="button" id="save1" value="Save"></select>
 	<!--     <input type="button" value="Download" id="Download_as_png_ms1" onclick="downloadPng()" />
 	    <br/> -->
 		<svg id="ms1svg">
+			<style type="text/css">
+    		.axis path,
+			.axis line{
+			    fill: none;
+			    stroke: black;
+			    shape-rendering: crispEdges;
+			}
+
+			.axis text {
+			    font-family: sans-serif;
+			    font-size: 11px;
+			}
+			</style>
 		</svg>
 	    <label>MS2 Scan=</label>
 	    <select id="Select2"></select>
+	    <input type="button" id="save2" value="Save"></select>
 		<svg id="ms2svg">
+			<style type="text/css">
+    		.axis path,
+			.axis line{
+			    fill: none;
+			    stroke: black;
+			    shape-rendering: crispEdges;
+			}
+
+			.axis text {
+			    font-family: sans-serif;
+			    font-size: 11px;
+			}
+			</style>
 		</svg>
 	</div>
 

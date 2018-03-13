@@ -192,7 +192,7 @@ DataControls = function(spectrum) {
 	this.textMZ;
 	this.textIN;
 	this.over = function(t,d,i){
-		console.log("----spectrum level:"+self.spectrum.level);
+		// console.log("----spectrum level:"+self.spectrum.level);
 		var tmpData = [[d,self.yScale(self.peakintensityShow[i])]];
 		d3.select(t).attr("stroke","red")
 			.attr("stroke-width","3");
@@ -305,6 +305,38 @@ DataControls = function(spectrum) {
 	function dragended() {
 	  d3.select(this).classed("dragging", false);
 		spectrum.svg.attr("cursor","default");
+	}
+
+	this.saveAsPng = function() {
+		var serializer = new XMLSerializer();
+		var source = serializer.serializeToString(self.spectrum.svg.node());
+
+		source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+		var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+		// document.write('<img src="' + url + '"/>');
+
+		var canvas = document.createElement("canvas");
+		canvas.width = self.spectrum.width*2;
+		canvas.height = self.spectrum.height*2;
+
+		var context = canvas.getContext("2d");
+		context.fillStyle="#FFFFFF"
+		context.fillRect(0,0,canvas.width,canvas.height);
+		var image = new Image;
+		image.src = url;
+
+	    image.onload = function() {
+			context.drawImage(image, 0, 0);		
+			var a = document.createElement("a");
+			a.download = "download.png";
+			a.href = canvas.toDataURL("image/png");
+			a.click();
+	    }
+		// document.body.appendChild(canvas);
+
+
+
+
 	}
 
 

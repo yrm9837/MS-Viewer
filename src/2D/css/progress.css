@@ -16,4 +16,8 @@
     width: 0;
     background-color: rgb(98, 230, 74);
     transition: width 0.3s ease-out;
+}    
+.container{
+    height:40%;
+    width:100%;
 }

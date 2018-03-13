@@ -44,7 +44,11 @@ MsGraph.prototype.init = function(){
     var scene = this.scene = new THREE.Scene();
     
     // rendering element
-    var renderer = this.renderer = new THREE.WebGLRenderer( { antialias: true } );
+    var renderer = this.renderer = new THREE.WebGLRenderer( { 
+        antialias: true,
+        preserveDrawingBuffer: true
+        // canvas: document.getElementById("can3d")
+    } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0xcccccc);

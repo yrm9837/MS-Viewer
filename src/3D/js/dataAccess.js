@@ -209,28 +209,49 @@ DataBridge.prototype.openFile = function()
 // instructs the server to save data model as _filename
 DataBridge.prototype.saveDataModel = function(_filename)
 {
-    this.updateCommStatus("Server saving " + _filename + "...");
+    var canvas = this.graph.renderer.domElement;
+    console.log("canvas");
+    console.log(canvas);
+    // var canvas = document.createElement("canvas");
+    // canvas1.width = 200;
+    // canvas1.height = 200;
+
+    // var context = canvas.getContext("2d");
+    // var image = canvas1.getContext("2d").getImageData();
+
+    // context.drawImage(image, 0, 0);
+    // console.log("canvas");
+    // console.log(canvas);
+    // console.log(context);
+
+    // document.body.appendChild(canvas1);
+    var a = document.createElement("a");
+    a.download = _filename;
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+
+    // this.updateCommStatus("Server saving " + _filename + "...");
     
-    var self = this;
-    // send save instruction to server
-    $.getJSON(API_UTIL.API_ROOT + "/savemodel",{filename: _filename})
+    // var self = this;
+    // // send save instruction to server
+    // $.getJSON(API_UTIL.API_ROOT + "/savemodel",{filename: _filename})
             
-            // HTTP status codes 2XX
-            .done(function(data,status,jqXHR){
-                switch(jqXHR.status){
-                    case API_UTIL.HTTP_200_OK:
-                        self.updateCommStatus("Saved to " + data.filepath);
-                        break;
-                    case API_UTIL.HTTP_204_NO_CONTENT:
-                        self.updateCommStatus("Cannot save, no data loaded");
-                        break;
-                }
-            })
+    //         // HTTP status codes 2XX
+    //         .done(function(data,status,jqXHR){
+    //             switch(jqXHR.status){
+    //                 case API_UTIL.HTTP_200_OK:
+    //                     self.updateCommStatus("Saved to " + data.filepath);
+    //                     break;
+    //                 case API_UTIL.HTTP_204_NO_CONTENT:
+    //                     self.updateCommStatus("Cannot save, no data loaded");
+    //                     break;
+    //             }
+    //         })
             
-            // HTTP status codes 4XX/5XX
-            .fail(function(jqXHR,textStatus,errorThrown){
-                self.updateCommStatus("Could not save " + _filename);
-            });
+    //         // HTTP status codes 4XX/5XX
+    //         .fail(function(jqXHR,textStatus,errorThrown){
+    //             self.updateCommStatus("Could not save " + _filename);
+    //         });
 };
 
 // sends point updates to server with onSuccess and onFail callbacks
