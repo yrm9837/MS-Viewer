@@ -51,7 +51,8 @@ MsGraph.prototype.init = function(){
     } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0xcccccc);
+    // renderer.setClearColor(0xcccccc);
+    renderer.setClearColor(0xffffff);
     $(this.graphEl).append(renderer.domElement);
     
     // camera
