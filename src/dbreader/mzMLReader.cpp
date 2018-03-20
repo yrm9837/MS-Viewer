@@ -257,12 +257,12 @@ void mzMLReader::insertSpStmt(int scanIndex, std::string scan, double retentionT
   }
 };
 void mzMLReader::insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz) {
-  std::cout << peakIndex << "," << scanIndex << "," << intensity << "," << mz <<  std:endl;
+  // std::cout << peakIndex << "," << scanIndex << "," << intensity << "," << mz <<  std::endl;
   sqlite3_reset(stmtPeak);
   sqlite3_bind_int(stmtPeak,1,peakIndex);
   sqlite3_bind_int(stmtPeak,2,scanIndex);
-  sqlite3_bind_double(stmtPeak,3,intensity);
-  sqlite3_bind_double(stmtPeak,4,mz);
+  sqlite3_bind_double(stmtPeak,4,intensity);
+  sqlite3_bind_double(stmtPeak,3,mz);
   int r = sqlite3_step(stmtPeak);
   if (r != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db) << std::endl;
