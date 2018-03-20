@@ -13,7 +13,7 @@ var Legend = function(legendEl) {
 	this.renderer.setSize(this.size, this.size);
 	this.renderer.setClearColor(0x00FFFF, 0);
     
-    $(legendEl).append(this.renderer.domElement);
+  $(legendEl).append(this.renderer.domElement);
 
 	this.camera = new THREE.OrthographicCamera(
 		-10, 10, 10, -10, -1, 100);

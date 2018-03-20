@@ -152,7 +152,7 @@ Spectrum.prototype.reset = function(spectrum) {
 		.scale(yScale_new)
 		.orient("left")
 		.tickFormat(function(d) { return Math.round(d * 100 / d3.max(self.dataControls.peakintensity)) + "%"; })
-    	.ticks(10);
+  	.ticks(10);
 
     self.claerAxis(self);
     self.addAxis(self);

@@ -11,54 +11,49 @@
 
 <body>  
 
-    <fieldset id="toolbar">
-        <legend>Read files：</legend>
-	    <select id="file_select"></select>
-		<!-- <input type="file" id="file" name="file" size="50" /> -->
-<!-- 		<input type="hidden" id="rawFilePath" name="rawFilePath">
-		<input type="submit" value="Submit" onclick="filePathPost()"> -->
+  <fieldset id="toolbar">
+    <legend>Read files：</legend>
+    <select id="file_select"></select>
 		<input type="button" class="delete" id="delete" value="Delete files">
-	    <input id="file_upload" type="file" multiple>
-	    <div class="progress">
-	      <span></span>
-	    </div>
-    </fieldset>
+    <input id="file_upload" type="file" multiple>
+    <div class="progress">
+    	<span></span>
+    </div>
+  </fieldset>
 	<div class="container" id="container">
-	    <label>MS1 Scan=</label>
-	    <select id="Select1"></select>
-	    <input type="button" id="save1" value="Save"></select>
-	<!--     <input type="button" value="Download" id="Download_as_png_ms1" onclick="downloadPng()" />
-	    <br/> -->
+    <label>MS1 Scan=</label>
+    <select id="Select1"></select>
+    <input type="button" id="save1" value="Save"></select>
 		<svg id="ms1svg">
 			<style type="text/css">
     		.axis path,
-			.axis line{
+				.axis line{
 			    fill: none;
 			    stroke: black;
 			    shape-rendering: crispEdges;
-			}
+				}
 
-			.axis text {
+				.axis text {
 			    font-family: sans-serif;
 			    font-size: 11px;
-			}
+				}
 			</style>
 		</svg>
-	    <label>MS2 Scan=</label>
-	    <select id="Select2"></select>
-	    <input type="button" id="save2" value="Save"></select>
+    <label>MS2 Scan=</label>
+    <select id="Select2"></select>
+    <input type="button" id="save2" value="Save"></select>
 		<svg id="ms2svg">
 			<style type="text/css">
     		.axis path,
 			.axis line{
-			    fill: none;
-			    stroke: black;
-			    shape-rendering: crispEdges;
+		    fill: none;
+		    stroke: black;
+		    shape-rendering: crispEdges;
 			}
 
 			.axis text {
-			    font-family: sans-serif;
-			    font-size: 11px;
+		    font-family: sans-serif;
+		    font-size: 11px;
 			}
 			</style>
 		</svg>
@@ -71,8 +66,7 @@
     <script src="2D/js/buttons.js"></script>  
     <script src="2D/js/spectrum.js"></script>  
     <script src="2D/js/dataControls.js"></script>
-    <script src="2D/js/spectrumPoints.js"></script>
-<!--     <script src="2D/js/dataControls2.js"></script>   -->
+    <script src="2D/js/spectrumPoints.js"></script>\
     <script src="2D/js/sp2d.js"></script>  
     <script src="2D/js/files.js"></script>  
 
