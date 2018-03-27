@@ -14,20 +14,21 @@ int main(int argc, char* argv[]) {
   	std::cout << "Break1" << std::endl;
     msreader.getScans(std::stoi(argv[3]));
   } else if (strcmp(argv[2],"-p") == 0) {
+    clock_t t1 = clock();
     // msreader.getAllPeaks(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]), std::stoi(argv[7]), std::stod(argv[8]));
-    msreader.getAllPeaksDB(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]), std::stoi(argv[7]), std::stod(argv[8]));
+    // msreader.getAllPeaksDB(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]), std::stoi(argv[7]), std::stod(argv[8]));
+    msreader.getAllPeaksDBOneTable(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5])*60, std::stod(argv[6])*60, std::stoi(argv[7]), std::stod(argv[8]));
+    // std::cout <<"Use Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   } else if (strcmp(argv[2],"-f") == 0) {
+    clock_t t1 = clock();
     // msreader.getRange();
-    msreader.getRangeDB();
-  // } else if (strcmp(argv[2],"-pdb") == 0) {
-  //   // msreader.getAllPeaks(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]), std::stoi(argv[7]), std::stod(argv[8]));
-  //   msreader.getAllPeaksDB(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]), std::stoi(argv[7]), std::stod(argv[8]));
-  // } else if (strcmp(argv[2],"-fdb") == 0) {
-  //   // msreader.getRange();
-  //   msreader.getRangeDB();
+    // msreader.getRangeDB();
+    msreader.getRangeDBOneTable();
+    // std::cout <<"Use Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   } else if (strcmp(argv[2],"-c") == 0) {
     clock_t t1 = clock();
-    msreader.createDtabase_2();
+    // msreader.createDtabase();
+    msreader.createDtabaseOneTable();
     std::cout <<"Use Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   } else if (strcmp(argv[2],"-t") == 0) {
   } else if (strcmp(argv[2],"-n2s") == 0) {

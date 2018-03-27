@@ -29,16 +29,19 @@ public:
   Index_mzML_Ptr index;
 	SpectrumListPtr sl;
 	mzMLReader databaseReader;
+	Range RANGE;
 	void getScans(int scanLevel);
 	void getSinglePeaks(int scan);
 	void getRange();
 	void getAllPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
+	void createDtabase_normal();
 	void createDtabase();
-	void createDtabase_1();
-	void createDtabase_2();
-	void createDtabase_3();
 	void getRangeDB();
 	void getAllPeaksDB(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
+	void getRangeFromRaw();
+	void createDtabaseOneTable();
+	void getRangeDBOneTable();
+	void getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 };
 
 

@@ -112,6 +112,7 @@ app.get('/getpoints', function (req, res) {
    }
    console.log(response);
    // res.write(stdout);
+   console.log("Output length: " + stdout.length);
    res.end(JSON.stringify(response));
    console.log('Success call openfile.');
   })

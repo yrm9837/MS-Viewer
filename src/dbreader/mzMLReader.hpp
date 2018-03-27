@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <math.h> 
 #include <sqlite3.h> 
 using namespace std;
 
@@ -14,6 +15,21 @@ struct Point{
   double rt;
   double inten;
 };
+struct Range{
+  double MZMIN;
+  double MZMAX;
+  double RTMIN;
+  double RTMAX;
+  double INTMIN;
+  double INTMAX;
+  int COUNT;
+  int LAYERCOUNT;
+  int MAXRETURN = 15000;
+  vector<double> MZSIZE;
+  vector<double> RTSIZE;
+  std::string TARGET = "";
+};
+
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 std::string num2str(double num);
@@ -28,8 +44,6 @@ public:
 	char *sql;
 	char *data;
 	bool isNew;
-	sqlite3_stmt *stmtSp;
-	sqlite3_stmt *stmtPeak;
 	mzMLReader();
 	void setName(std::string fileName);
 	void openDatabase(std::string fileName);
@@ -46,6 +60,47 @@ public:
 	void closeInsertStmt();
 	void insertSpStmt(int scanIndex, std::string scan, double retentionTime);
 	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz);
+	void createIndex();
+
+	double MZ_GROUP1_SIZE;
+	double MZ_GROUP2_SIZE;
+	double MZ_GROUP3_SIZE;
+	double MZ_GROUP4_SIZE;
+	double MZ_GROUP5_SIZE;
+	double RT_GROUP1_SIZE;
+	double RT_GROUP2_SIZE;
+	double RT_GROUP3_SIZE;
+	double RT_GROUP4_SIZE;
+	double RT_GROUP5_SIZE;
+	int MZ_GROUP1;
+	int MZ_GROUP2;
+	int MZ_GROUP3;
+	int MZ_GROUP4;
+	int MZ_GROUP5;
+	int RT_GROUP1;
+	int RT_GROUP2;
+	int RT_GROUP3;
+	int RT_GROUP4;
+	int RT_GROUP5;
+	void setRange(Range tmpRange);
+	void setGroup(double mz, double rt);
+	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
+	void creatTableOneTable();
+	void insertPeakOneTable(int peakIndex, int scanIndex, double intensity, double mz);
+	void getRangeOneTable();
+	void getPeaksOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
+	void openInsertStmtOneTable();
+	void closeInsertStmtOneTable();
+	void insertPeakStmtOneTable(int peakIndex, int scanIndex, double mz, double intensity, double retentionTime);
+	void insertConfigOneTable();
+	void createIndexLayerTable(std::string num);
+	void createIndexOneTable();
+	void creatLayersTable();
+	void createLayerTable(std::string num);
+	void getConfig();
+	void openInsertLayerStmt(std::string num);
+	void closeInsertLayerStmt();
+	void insertPeaksLayerStmt(std::string origin, int j, int k, double mzsize, double rtsize);
 };
 
 
