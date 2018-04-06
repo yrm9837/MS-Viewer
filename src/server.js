@@ -95,13 +95,18 @@ app.get('/filestatus', function (req, res) {
   })
 });
 app.get('/getpoints', function (req, res) {
+  var timestamp = new Date().getTime();
   prepairDB(fileName)
+  console.log('Prepair DB time: ' + (new Date().getTime() - timestamp)/1000 + "s");
+  timestamp = new Date().getTime();
    // 输出 JSON 格式
   // console.log(req);
   var cmd = "../exe/msReader " + filePath + " -p " + req.query.mzmin + " " + req.query.mzmax + " " 
     + req.query.rtmin + " " + req.query.rtmax + " " + req.query.numpoints + " " + req.query.intmin;
   console.log(cmd);
   exec(cmd,function(error, stdout,stderr) {
+   console.log('Run cpp time: ' + (new Date().getTime() - timestamp)/1000 + "s");
+   timestamp = new Date().getTime();
    var allScan = stdout.split("\t");
    var response = [];
    for (var i = 0; i < allScan.length; i++){
@@ -110,11 +115,14 @@ app.get('/getpoints', function (req, res) {
         response[i] = [parseInt(singleScan[0]),parseFloat(singleScan[1]),parseFloat(singleScan[2]),parseFloat(singleScan[3])];
       }
    }
-   console.log(response);
+   console.log('Process data time: ' + (new Date().getTime() - timestamp)/1000 + "s");
+   timestamp = new Date().getTime();
+   // console.log(response);
    // res.write(stdout);
    console.log("Output length: " + stdout.length);
    res.end(JSON.stringify(response));
-   console.log('Success call openfile.');
+   console.log('Use time: ' + (new Date().getTime() - timestamp)/1000 + "s");
+   console.log('Success call getpoints.');
   })
 });
 app.post('/filelist', urlencodedParser, function (req, res) {

@@ -24,7 +24,7 @@ struct Range{
   double INTMAX;
   int COUNT;
   int LAYERCOUNT;
-  int MAXRETURN = 15000;
+  int MAXRETURN = 5000;
   vector<double> MZSIZE;
   vector<double> RTSIZE;
   std::string TARGET = "";
@@ -101,6 +101,13 @@ public:
 	void openInsertLayerStmt(std::string num);
 	void closeInsertLayerStmt();
 	void insertPeaksLayerStmt(std::string origin, int j, int k, double mzsize, double rtsize);
+	void creatLayersTableRTree();
+	void createLayerTableRTree(std::string num);
+	void openInsertLayerStmtRTree(std::string num);
+	void closeInsertLayerStmtRTree();
+	void insertAllPeaksLayerStmtRTree();
+	void insertPeaksLayerStmtRTree(std::string origin, int j, int k, double mzsize, double rtsize);
+	void getPeaksOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 };
 
 

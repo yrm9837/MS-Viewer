@@ -68,6 +68,21 @@ int callbackInsertPeak(void *NotUsed, int argc, char **argv, char **azColName) {
   }
   return 0;
 };
+int callbackInsertPeakRTree(void *NotUsed, int argc, char **argv, char **azColName) {
+  sqlite3_reset(stmtPeak);
+  sqlite3_bind_int(stmtPeak,1,std::stoi(argv[0]));
+  sqlite3_bind_int(stmtPeak,2,std::stoi(argv[1]));
+  sqlite3_bind_double(stmtPeak,3,std::stod(argv[1]));
+  sqlite3_bind_double(stmtPeak,4,std::stod(argv[2]));
+  sqlite3_bind_double(stmtPeak,5,std::stod(argv[2]));
+  int r = sqlite3_step(stmtPeak);
+  if (r != SQLITE_DONE) {
+    // std::cout << sqlite3_errmsg(db) << std::endl;
+    std::cout << argv[0] << "," << argv[1] << "," << argv[2] << "," << argv[3] << "," << argv[4] << "\t" ;
+    std::cout << "callbackInsertPeak error" << std::endl;
+  }
+  return 0;
+};
 
 mzMLReader::mzMLReader() {
    data = (char*)("Callback function called");
@@ -834,4 +849,138 @@ void mzMLReader::createIndexOneTable() {
   //   // fprintf(stdout, "Records created successfully\n");
   //   std::cout << "Group3_index created successfully" << std::endl;
   // }
+};
+
+
+void mzMLReader::creatLayersTableRTree() {
+  std::string origin = "";
+  clock_t t1 = clock();
+  getConfig();
+  std::cout <<"Get Config Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  beginTransaction();
+  createLayerTableRTree(num2str(RANGE.LAYERCOUNT));
+  openInsertLayerStmtRTree(num2str(RANGE.LAYERCOUNT));
+  insertAllPeaksLayerStmtRTree();
+  closeInsertLayerStmtRTree();
+  endTransaction();
+  std::cout <<"InsertLayer Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  for (int i = RANGE.LAYERCOUNT - 1; i > -1; i--) {
+    origin = num2str(i+1);
+    double mzsize = RANGE.MZSIZE[i];
+    double rtsize = RANGE.RTSIZE[i];
+    int n = pow(2,i);
+    t1 = clock();
+    beginTransaction();
+    createLayerTableRTree(num2str(i));
+    openInsertLayerStmtRTree(num2str(i));
+    for (int j = 0; j < n; j++) {
+      for (int k = 0; k < n; k++) {
+        // std::cout << "Inserting region <" << j << "," << k << "> for layer " << i << " <" << n << "," << n << ">" << std::endl;
+        insertPeaksLayerStmtRTree(origin, j, k, mzsize, rtsize);
+      }
+    }
+    closeInsertLayerStmtRTree();
+    endTransaction();
+    std::cout <<"InsertLayer Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+    t1 = clock();
+    // std::cout << "Layer " << i << " table created." << std::endl;
+  }
+};
+void mzMLReader::createLayerTableRTree(std::string num) {
+  /* Create SQL statement */
+  std::string sqlstr = "CREATE VIRTUAL TABLE PEAKS" + num + " USING rtree("  \
+       "ID," \
+       "minMZ, maxMZ," \
+       "minRT, maxRT)";
+  sql = (char *)sqlstr.c_str();
+
+  /* Execute SQL statement */
+  rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+  if( rc != SQLITE_OK ){
+    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+    sqlite3_free(zErrMsg);
+  }else{
+    // fprintf(stdout, "Table created successfully\n");
+    std::cout << "One table PEAKS" + num +" created successfully" << std::endl;
+  }
+};
+void mzMLReader::openInsertLayerStmtRTree(std::string num) {
+  std::string sqlstr = "INSERT INTO PEAKS" + num +" VALUES (? ,? ,?, ?, ?); ";
+  sql = (char *)sqlstr.c_str();
+  sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtPeak, 0);
+};
+void mzMLReader::closeInsertLayerStmtRTree() {
+  sqlite3_finalize(stmtPeak);
+};
+void mzMLReader::insertAllPeaksLayerStmtRTree() {
+  /* Create SQL statement */
+  std::string sqlstr = "SELECT ID,MZ,RETENTIONTIME FROM PEAKS;";
+  sql = (char *)sqlstr.c_str();
+  /* Execute SQL statement */
+  rc = sqlite3_exec(db, sql, callbackInsertPeakRTree, (void*)data, &zErrMsg);
+  if( rc != SQLITE_OK ){
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+    sqlite3_free(zErrMsg);
+  }else{
+    // std::cout << "Operation done successfully" << std::endl;
+  }
+};
+void mzMLReader::insertPeaksLayerStmtRTree(std::string origin, int j, int k, double mzsize, double rtsize) {
+  double mzmin = RANGE.MZMIN + mzsize * j;
+  double mzmax = mzmin + mzsize;
+  double rtmin = RANGE.RTMIN + rtsize * k;
+  double rtmax = rtmin + rtsize;
+  /* Create SQL statement */
+  // std::string sqlstr = "SELECT ID,MZ,RETENTIONTIME FROM PEAKS WHERE " \
+  //   "MZ>" + num2str(mzmin) + " AND MZ<" + num2str(mzmax) + " AND RETENTIONTIME>" + num2str(rtmin) + " AND RETENTIONTIME<" +
+  //   num2str(rtmax) + " ORDER BY INTENSITY DESC LIMIT 0," + int2str(RANGE.MAXRETURN) + ";";
+
+  std::string sqlstr = "SELECT PEAKS.ID,MZ,RETENTIONTIME FROM PEAKS,PEAKS" + origin + " WHERE " \
+    "PEAKS.ID=PEAKS" + origin + ".ID AND " \
+    "minMZ>" + num2str(mzmin) + " AND maxMZ<" + num2str(mzmax) + " AND minRT>" + num2str(rtmin) + " AND maxRT<" +
+    num2str(rtmax) + " ORDER BY INTENSITY DESC LIMIT 0," + int2str(RANGE.MAXRETURN) + ";";
+  sql = (char *)sqlstr.c_str();
+  /* Execute SQL statement */
+  rc = sqlite3_exec(db, sql, callbackInsertPeakRTree, (void*)data, &zErrMsg);
+  if( rc != SQLITE_OK ){
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+    sqlite3_free(zErrMsg);
+  }else{
+    // std::cout << "Operation done successfully" << std::endl;
+  }
+    // std::cout << i+1 << "," << pointsList[i].mz << "," << pointsList[i].rt << "," << pointsList[i].inten << "\t";
+  // std::cout << sqlstr << std::endl;
+  
+};
+
+void mzMLReader::getPeaksOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
+  getConfig();
+  int layer = RANGE.LAYERCOUNT-1;
+  for (int i = layer; i > -1; i--) {
+    layer = i;
+    if (RANGE.MZSIZE[i] > mzmax - mzmin) {
+      // std::cout << "RANGE.MZSIZE[i]: " << RANGE.MZSIZE[i] << ">" << "mzmax - mzmin :" << (mzmax - mzmin) << std::endl;
+      layer = i + 1;
+      break;
+    }
+  }
+  std::string layerstr = num2str(layer);
+  /* Create SQL statement */
+  std::string sqlstr = "SELECT PEAKS.ID,MZ,RETENTIONTIME,INTENSITY FROM PEAKS,PEAKS" + layerstr + " WHERE " \
+    "PEAKS.ID=PEAKS" + layerstr + ".ID AND " \
+    "minMZ>" + num2str(mzmin) + " AND maxMZ<" + num2str(mzmax) + " AND minRT>" + num2str(rtmin) + " AND maxRT<" +
+    num2str(rtmax) + " AND INTENSITY>" + num2str(intmin);
+  sqlstr = sqlstr + " ORDER BY INTENSITY DESC LIMIT 0," + int2str(numpoints) + ";";
+  sql = (char *)sqlstr.c_str();
+  /* Execute SQL statement */
+  rc = sqlite3_exec(db, sql, callbackPeak, (void*)data, &zErrMsg);
+  if( rc != SQLITE_OK ){
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+    sqlite3_free(zErrMsg);
+  }else{
+    // std::cout << "Operation done successfully" << std::endl;
+  }
+  std::cout << std::endl;
 };

@@ -357,3 +357,74 @@ void msReader::getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, d
   // std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 };
+void msReader::createDtabaseOneTableRTree() { //stmt
+  clock_t t1 = clock();
+  getRangeFromRaw();
+  std::cout <<"Get range from raw data Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.openDatabase(file_name);
+  std::cout <<"Open database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.creatTableOneTable();
+  std::cout <<"Create table Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  int scanLevel = 1;
+  int count = 0;
+  int spSize = sl->size();
+  std::vector<Point> pointsList;
+  databaseReader.beginTransaction();
+  std::cout <<"Begin transaction Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.openInsertStmtOneTable();
+  for(int i = 0; i < spSize; i++){
+    if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
+      SpectrumPtr s = sl->spectrum(i, true); // read with binary data
+      Scan dummy;
+      Scan scan = s->scanList.scans.empty() ? dummy : s->scanList.scans[0];
+      double retentionTime = scan.cvParam(MS_scan_start_time).timeInSeconds();
+      // databaseReader.insertSpStmt(i, getScan(sl->spectrumIdentity(i).id), retentionTime); 
+      vector<MZIntensityPair> pairs;
+      s->getMZIntensityPairs(pairs);
+      for (int j=0; j<pairs.size(); j++) {
+        count++ ;
+        // std::cout << count << std::endl;
+        databaseReader.insertPeakStmtOneTable(count, std::stoi(getScan(sl->spectrumIdentity(i).id)), pairs[j].mz, pairs[j].intensity, retentionTime);
+      }
+    }
+  }
+  databaseReader.closeInsertStmtOneTable();
+  std::cout <<"Insert Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.endTransaction();
+  std::cout <<"End Transaction Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.createIndexOneTable();
+  std::cout <<"Creat Index Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.setRange(RANGE);
+  std::cout <<"Set range Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.insertConfigOneTable();
+  std::cout <<"Insert range Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.creatLayersTableRTree();
+  std::cout <<"Create layers table Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.closeDatabase();
+  std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+}
+void msReader::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
+  int scanLevel = 1;
+  int count = 0;
+  int spSize = sl->size();
+  clock_t t1 = clock();
+  databaseReader.openDatabase(file_name);
+  // std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.getPeaksOneTableRTree(mzmin, mzmax, rtmin, rtmax, numpoints, intmin);
+  // std::cout <<"Get Peaks: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.closeDatabase();
+  // std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+};

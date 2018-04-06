@@ -17,7 +17,8 @@ int main(int argc, char* argv[]) {
     clock_t t1 = clock();
     // msreader.getAllPeaks(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]), std::stoi(argv[7]), std::stod(argv[8]));
     // msreader.getAllPeaksDB(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]), std::stoi(argv[7]), std::stod(argv[8]));
-    msreader.getAllPeaksDBOneTable(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5])*60, std::stod(argv[6])*60, std::stoi(argv[7]), std::stod(argv[8]));
+    // msreader.getAllPeaksDBOneTable(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5])*60, std::stod(argv[6])*60, std::stoi(argv[7]), std::stod(argv[8]));
+    msreader.getAllPeaksDBOneTableRTree(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5])*60, std::stod(argv[6])*60, std::stoi(argv[7]), std::stod(argv[8]));
     // std::cout <<"Use Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   } else if (strcmp(argv[2],"-f") == 0) {
     clock_t t1 = clock();
@@ -28,7 +29,8 @@ int main(int argc, char* argv[]) {
   } else if (strcmp(argv[2],"-c") == 0) {
     clock_t t1 = clock();
     // msreader.createDtabase();
-    msreader.createDtabaseOneTable();
+    // msreader.createDtabaseOneTable();
+    msreader.createDtabaseOneTableRTree();
     std::cout <<"Use Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   } else if (strcmp(argv[2],"-t") == 0) {
   } else if (strcmp(argv[2],"-n2s") == 0) {

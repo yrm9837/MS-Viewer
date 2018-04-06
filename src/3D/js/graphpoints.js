@@ -8,7 +8,6 @@ MsGraph.prototype.plotPoints = function(points) {
   }
   
   // make sure the groups are plotted and update the view
-  
   this.repositionPlot(this.viewRange);
   this.updateViewRange(this.viewRange);
 };
@@ -61,11 +60,24 @@ MsGraph.prototype.plotPoint = function(point) {
   this.pinGroup.add(pinhead);
 };
 
+
+// set scales
+// MsGraph.prototype.setScale = function(r) {
+//     // set plot positions and scales
+//     var heightScale = this.USE_LOG_SCALE_HEIGHT ? Math.log(this.dataRange.intmax) : this.dataRange.intmax;
+// console.log("heightScale:"+heightScale);
+//     this.datagroup.scale.set(this.GRID_RANGE / r.mzrange, this.GRID_RANGE_VERTICAL / heightScale, -this.GRID_RANGE / r.rtrange);
+// }
+MsGraph.prototype.setScale = function(r) {
+    // set plot positions and scales
+    var heightScale = this.USE_LOG_SCALE_HEIGHT ? Math.log(MsGraph.roundTo(this.viewRange.intmax, 3)) : MsGraph.roundTo(this.viewRange.intmax, 3);
+console.log("heightScale:"+heightScale);
+    this.datagroup.scale.set(this.GRID_RANGE / r.mzrange, this.GRID_RANGE_VERTICAL / heightScale, -this.GRID_RANGE / r.rtrange);
+}
 // scales and positions the plot depending on the new viewing range
 MsGraph.prototype.repositionPlot = function(r) {
-  // set plot positions and scales
-  var heightScale = this.USE_LOG_SCALE_HEIGHT ? Math.log(this.dataRange.intmax) : this.dataRange.intmax;
-  this.datagroup.scale.set(this.GRID_RANGE / r.mzrange, this.GRID_RANGE_VERTICAL / heightScale, -this.GRID_RANGE / r.rtrange);
+    // set plot positions and scales
+  this.setScale(r);
   this.pinGroup.children.forEach(function(p) {
     // y and z are swapped from expectation because the pinheads are rotated
     p.scale.set(r.mzrange / this.GRID_RANGE, -r.rtrange / this.GRID_RANGE, 1);
@@ -234,6 +246,11 @@ MsGraph.prototype.updateDragZoomRect = function(xmin, xmax, zmin, zmax) {
 // zooms the view to a specific view range.
 // alternatively, pass an object with properties named after the parameters
 MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
+  this.setViewingAreaWithoutServer(mzmin, mzrange, rtmin, rtrange);
+  
+  this.dataBridge.requestPointsFromServer();
+};
+MsGraph.prototype.setViewingAreaWithoutServer = function(mzmin, mzrange, rtmin, rtrange) {
   var r = mzmin;
   
   if (typeof mzmin === "number") {
@@ -245,6 +262,4 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
   r = this.constrainBounds(r);
   this.repositionPlot(r);
   this.updateViewRange(r);
-  
-  this.dataBridge.requestPointsFromServer();
 };

@@ -40,7 +40,8 @@ DataControls = function(graph) {
     if (zoomPoint === null) {
       return;
     }
-    
+console.log("event:");
+console.log(event);
     // mz/rtDist = fractional position of mouse
     var mzDist = zoomPoint.x;
     var rtDist = zoomPoint.z;
