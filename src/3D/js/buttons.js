@@ -11,7 +11,8 @@ function Toolbar(graph, containerEl) {
     "_3d" : false,              //3d display on or off
     "hover" : false,            //Whether hover text is off; changed by clicking hover text button at top right
     "colorblind": false,
-    "save_as" : false           //save as button
+    "save_as" : false,           //save as button
+    "scale" : false           //Auto scale button
   };
 
   // Global settings to save in localStorage
@@ -219,6 +220,14 @@ this.containerEl.find(".jump").click(function() {
     var newmzmin = +newmz - (vr.mzrange / 2);
     graph.setViewingArea(newmzmin, vr.mzrange, vr.rtmin, vr.rtrange);
   }
+});
+
+// Auto scale intensity switch
+this.containerEl.find(".scale").click(function() {
+  toolbar.isButtonSelected.scale = !toolbar.isButtonSelected.scale;
+  graph.autoScale = toolbar.isButtonSelected.scale;
+  graph.intScale = !graph.autoScale;
+  toolbar.updateIconStates();
 });
 
 // detail level slider bar popout

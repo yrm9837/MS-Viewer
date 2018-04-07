@@ -35,6 +35,10 @@ function MsGraph(containerEl, graphEl, legendEl) {
   
   this.RENDER_DELAY_THROTTLE = 100;
   this.renderRequested = false;
+
+  this.autoScale = false;
+  this.intScale = true;
+  this.intScaleValue = 1;
 }
 
 // actually creates the graph scene and sets it up. Should be called

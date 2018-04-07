@@ -42,30 +42,48 @@ DataControls = function(graph) {
     }
 console.log("event:");
 console.log(event);
-    // mz/rtDist = fractional position of mouse
-    var mzDist = zoomPoint.x;
-    var rtDist = zoomPoint.z;
-
-    // constrains points to within the graph bounds
-    mzDist = Math.min(Math.max(mzDist, 0), 1);
-    rtDist = Math.min(Math.max(rtDist, 0), 1);
-
-    // calculate a new range based on the view
-    var newmzrange, newrtrange;
-    if (event.deltaY < 0) {
-      // scroll up = zoom in - view range shrinks
-      newmzrange = vr.mzrange * 0.9;
-      newrtrange = vr.rtrange * 0.9;
-    } else {
-      // scroll down = zoom out - view range grows
-      newmzrange = vr.mzrange * 1.1;
-      newrtrange = vr.rtrange * 1.1;
-    }
     
-    var mzPoint = mzDist * vr.mzrange + vr.mzmin;
-    var rtPoint = rtDist * vr.rtrange + vr.rtmin;
-    var newmzmin = (mzPoint) - (newmzrange / vr.mzrange) * (mzPoint - vr.mzmin);
-    var newrtmin = (rtPoint) - (newrtrange / vr.rtrange) * (rtPoint - vr.rtmin);
+    scope.scaleInt = event.altKey ? graph.intScale : false;
+    var newmzrange = vr.mzrange;
+    var newrtrange = vr.rtrange;
+    var newmzmin = vr.mzmin;
+    var newrtmin = vr.rtmin;
+
+    if (scope.scaleInt) {
+      if (event.deltaY < 0) {
+        graph.intScaleValue = graph.intScaleValue * 0.9;
+      } else {
+        graph.intScaleValue = graph.intScaleValue * 1.1;
+      }
+
+    } else {
+      if (!graph.intScale) {
+        graph.intScaleValue = 1;  
+      }
+      // mz/rtDist = fractional position of mouse
+      var mzDist = zoomPoint.x;
+      var rtDist = zoomPoint.z;
+
+      // constrains points to within the graph bounds
+      mzDist = Math.min(Math.max(mzDist, 0), 1);
+      rtDist = Math.min(Math.max(rtDist, 0), 1);
+
+      // calculate a new range based on the view
+      if (event.deltaY < 0) {
+        // scroll up = zoom in - view range shrinks
+        newmzrange = vr.mzrange * 0.9;
+        newrtrange = vr.rtrange * 0.9;
+      } else {
+        // scroll down = zoom out - view range grows
+        newmzrange = vr.mzrange * 1.1;
+        newrtrange = vr.rtrange * 1.1;
+      }
+      
+      var mzPoint = mzDist * vr.mzrange + vr.mzmin;
+      var rtPoint = rtDist * vr.rtrange + vr.rtmin;
+      newmzmin = (mzPoint) - (newmzrange / vr.mzrange) * (mzPoint - vr.mzmin);
+      newrtmin = (rtPoint) - (newrtrange / vr.rtrange) * (rtPoint - vr.rtmin);
+    }
     
     graph.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
   }

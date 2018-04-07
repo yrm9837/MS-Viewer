@@ -29,6 +29,7 @@ var API_UTIL = {
 DataBridge.prototype.openFileWaitLoop = function() {
   var self = this;
   var _filename = self.graph.FILE_NAME;
+  this.graph.intScaleValue = 1;  
   // check the status of data model
   $.getJSON(API_UTIL.API_ROOT + "/filestatus",{filename:_filename})
     .done(function(data, status, jqXHR) {
@@ -129,22 +130,24 @@ DataBridge.prototype.queuePlotPoints = function(newPoints) {
       // draw more points after a delay
       this.queueCancelIds.push(setTimeout(morePoints.bind(this), this.QUEUE_PLOT_DELAY));
     } else {
-      var vr = this.graph.viewRange;
-      // mz/rtDist = fractional position of mouse
-      var mzDist = 0;
-      var rtDist = 0;
+      if (this.graph.autoScale && !this.graph.intScale) {
+        var vr = this.graph.viewRange;
+        // mz/rtDist = fractional position of mouse
+        var mzDist = 0;
+        var rtDist = 0;
 
-      // calculate a new range based on the view
-      var newmzrange, newrtrange;
-      newmzrange = vr.mzrange;
-      newrtrange = vr.rtrange;
-      
-      var mzPoint = mzDist * vr.mzrange + vr.mzmin;
-      var rtPoint = rtDist * vr.rtrange + vr.rtmin;
-      var newmzmin = (mzPoint) - (newmzrange / vr.mzrange) * (mzPoint - vr.mzmin);
-      var newrtmin = (rtPoint) - (newrtrange / vr.rtrange) * (rtPoint - vr.rtmin);
-      
-      this.graph.setViewingAreaWithoutServer(newmzmin, newmzrange, newrtmin, newrtrange);
+        // calculate a new range based on the view
+        var newmzrange, newrtrange;
+        newmzrange = vr.mzrange;
+        newrtrange = vr.rtrange;
+        
+        var mzPoint = mzDist * vr.mzrange + vr.mzmin;
+        var rtPoint = rtDist * vr.rtrange + vr.rtmin;
+        var newmzmin = (mzPoint) - (newmzrange / vr.mzrange) * (mzPoint - vr.mzmin);
+        var newrtmin = (rtPoint) - (newrtrange / vr.rtrange) * (rtPoint - vr.rtmin);
+        
+        this.graph.setViewingAreaWithoutServer(newmzmin, newmzrange, newrtmin, newrtrange);
+      }
       this.updateCommStatus("Ready");
     }
   }

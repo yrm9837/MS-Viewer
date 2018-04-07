@@ -69,10 +69,14 @@ MsGraph.prototype.plotPoint = function(point) {
 //     this.datagroup.scale.set(this.GRID_RANGE / r.mzrange, this.GRID_RANGE_VERTICAL / heightScale, -this.GRID_RANGE / r.rtrange);
 // }
 MsGraph.prototype.setScale = function(r) {
-    // set plot positions and scales
-    var heightScale = this.USE_LOG_SCALE_HEIGHT ? Math.log(MsGraph.roundTo(this.viewRange.intmax, 3)) : MsGraph.roundTo(this.viewRange.intmax, 3);
+  var intmax = this.dataRange.intmax * this.intScaleValue;
+  if (this.autoScale && !this.intScale) {
+    intmax = MsGraph.roundTo(this.viewRange.intmax, 3);
+  }
+  // set plot positions and scales
+  var heightScale = this.USE_LOG_SCALE_HEIGHT ? Math.log(intmax) : intmax;
 console.log("heightScale:"+heightScale);
-    this.datagroup.scale.set(this.GRID_RANGE / r.mzrange, this.GRID_RANGE_VERTICAL / heightScale, -this.GRID_RANGE / r.rtrange);
+  this.datagroup.scale.set(this.GRID_RANGE / r.mzrange, this.GRID_RANGE_VERTICAL / heightScale, -this.GRID_RANGE / r.rtrange);
 }
 // scales and positions the plot depending on the new viewing range
 MsGraph.prototype.repositionPlot = function(r) {
